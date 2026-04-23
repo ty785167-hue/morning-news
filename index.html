@@ -4,159 +4,135 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Moonlight Intelligence Desk</title>
+    <title>Moonlight Briefing Desk</title>
     <style>
         :root { 
             --bg-color: #050a14; 
             --moon-gold: #f3e5ab; 
-            --moon-silver: #e1e8f0;
-            --card-bg: rgba(22, 27, 34, 0.8);
             --accent: #d4af37;
             --text-main: #c9d1d9;
             --text-dim: #8b949e;
+            --card-bg: rgba(22, 27, 34, 0.8);
         }
         body { 
             font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; 
             background: var(--bg-color);
             background-image: radial-gradient(circle at 80% 10%, #1a2a44 0%, transparent 40%);
             color: var(--text-main); 
-            margin: 0; 
-            padding: 15px; 
-            line-height: 1.6;
+            margin: 0; padding: 15px; line-height: 1.6;
         }
         .container { max-width: 600px; margin: 0 auto; }
         
-        /* 月の要素を入れたヘッダー */
-        header { 
-            position: relative;
-            padding: 20px 0;
-            margin-bottom: 20px;
-            border-bottom: 1px solid rgba(212, 175, 55, 0.3);
-        }
-        .moon-icon {
-            position: absolute;
-            right: 0;
-            top: 10px;
-            width: 50px;
-            height: 50px;
-            background: var(--moon-gold);
-            border-radius: 50%;
-            box-shadow: 0 0 20px var(--moon-gold);
-        }
-        h1 { margin: 0; font-size: 1.4rem; color: var(--moon-gold); text-shadow: 0 0 10px rgba(243, 229, 171, 0.5); }
-        .update-info { font-size: 0.75rem; color: var(--text-dim); }
+        header { position: relative; padding: 20px 0; border-bottom: 1px solid rgba(212, 175, 55, 0.3); margin-bottom: 20px; }
+        .moon { position: absolute; right: 0; top: 15px; width: 45px; height: 45px; background: var(--moon-gold); border-radius: 50%; box-shadow: 0 0 20px var(--moon-gold); }
+        h1 { margin: 0; font-size: 1.3rem; color: var(--moon-gold); }
+        .date-row { font-size: 0.9rem; font-weight: bold; color: var(--text-main); margin-top: 5px; }
+        .weather-row { display: flex; align-items: center; gap: 15px; margin-top: 8px; }
+        .temp { font-size: 1.8rem; font-weight: bold; color: #fff; }
 
-        .weather-panel { display: flex; align-items: center; margin-top: 10px; gap: 15px; }
-        .temp { font-size: 1.8rem; font-weight: bold; color: var(--moon-silver); }
-
-        /* 更新ボタン */
-        .refresh-nav { text-align: center; margin: 20px 0; }
-        .btn-refresh {
-            background: transparent;
-            border: 1px solid var(--accent);
+        /* 更新ボタン：確実に見えるように調整 */
+        .refresh-nav { text-align: center; margin: 25px 0; }
+        #refresh-btn {
+            background: rgba(212, 175, 55, 0.1);
+            border: 2px solid var(--accent);
             color: var(--accent);
-            padding: 10px 25px;
-            border-radius: 30px;
+            padding: 12px 30px;
+            border-radius: 50px;
             cursor: pointer;
-            font-size: 0.85rem;
+            font-size: 1rem;
+            font-weight: bold;
+            display: inline-block;
             transition: 0.3s;
-            backdrop-filter: blur(5px);
         }
-        .btn-refresh:hover { background: rgba(212, 175, 55, 0.2); box-shadow: 0 0 15px var(--accent); }
+        #refresh-btn:hover { background: var(--accent); color: var(--bg-color); box-shadow: 0 0 20px var(--accent); }
 
-        /* 算命学フォーチュンカード */
+        /* 算命学セクション */
         .fortune-card {
             background: var(--card-bg);
-            border: 1px solid rgba(212, 175, 55, 0.5);
+            border: 1px solid var(--accent);
             border-radius: 15px;
-            padding: 25px;
+            padding: 20px;
             margin-bottom: 30px;
-            position: relative;
             backdrop-filter: blur(10px);
         }
-        .fortune-label { font-size: 0.75rem; color: var(--accent); font-weight: bold; text-transform: uppercase; margin-bottom: 15px; }
-        .star-name { font-size: 1.4rem; color: var(--moon-gold); font-weight: bold; margin-bottom: 10px; display: block; }
-        .fortune-desc { font-size: 1rem; color: var(--moon-silver); }
+        .fortune-label { font-size: 0.75rem; color: var(--accent); font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #30363d; }
+        .star-name { font-size: 1.4rem; color: var(--moon-gold); font-weight: bold; margin-bottom: 8px; display: block; }
+        .fortune-desc { font-size: 1rem; color: #fff; }
 
         /* ニュースセクション */
-        .news-section-label { font-size: 0.85rem; color: var(--accent); margin-bottom: 15px; letter-spacing: 2px; }
+        .news-label { font-size: 0.85rem; color: var(--accent); margin-bottom: 15px; border-left: 3px solid var(--accent); padding-left: 10px; }
         .news-item {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 12px;
-            padding: 18px;
-            margin-bottom: 15px;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 12px;
             text-decoration: none;
             display: block;
-            transition: 0.3s;
+            transition: 0.2s;
         }
-        .news-item:hover { background: rgba(255, 255, 255, 0.07); border-color: var(--accent); }
-        .news-item .source { font-size: 0.7rem; color: var(--highlight); font-weight: bold; color: #58a6ff; margin-bottom: 8px; }
-        .news-item .title { font-size: 1.05rem; color: var(--text-main); margin: 0; line-height: 1.5; }
+        .news-item:hover { border-color: var(--accent); background: rgba(255, 255, 255, 0.1); }
+        .news-source { font-size: 0.7rem; color: #58a6ff; font-weight: bold; margin-bottom: 5px; }
+        .news-title { font-size: 1rem; color: var(--text-main); margin: 0; line-height: 1.4; }
 
-        footer { text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 50px; padding-bottom: 30px; }
+        footer { text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 50px; padding-bottom: 40px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div class="moon-icon"></div>
+        <div class="moon"></div>
         <h1>MOONLIGHT BRIEFING</h1>
-        <div id="display-date" style="color: var(--moon-silver); font-weight: bold;">--月--日</div>
-        <div id="update-time" class="update-info">最終更新: --:--</div>
-        
-        <div class="weather-panel">
+        <div id="display-date" class="date-row">--月--日</div>
+        <div class="weather-row">
             <div id="temp" class="temp">--°C</div>
-            <div id="weather-text" style="font-size: 0.9rem;">Tokyo loading...</div>
+            <div id="weather-text" style="font-size: 0.85rem; color: var(--text-dim);">Tokyo Loading...</div>
         </div>
     </header>
 
     <div class="refresh-nav">
-        <button class="btn-refresh" id="refresh-btn" onclick="refreshAll()">最新ニュースに更新</button>
+        <button id="refresh-btn" onclick="refreshAll()">最新ニュースに更新</button>
     </div>
 
-    <!-- 算命学カード -->
     <div class="fortune-card">
-        <div class="fortune-label">Today's Sanmei-gaku Reading (Nikkan: Xin)</div>
-        <div id="star-title" class="star-name">主星を算出中...</div>
-        <div id="star-desc" class="fortune-desc">あなたの今日の星の動きを解析しています。</div>
+        <div class="fortune-label">今日の算命学鑑定（日干：辛）</div>
+        <div id="star-title" class="star-name">主星算出中...</div>
+        <div id="star-desc" class="fortune-desc">読み込み中...</div>
     </div>
 
-    <div class="news-section-label">LATEST GLOBAL HEADLINES</div>
+    <div class="news-label">主要ニュース（日本語版）</div>
     <div id="news-feed">ニュースを取得中...</div>
 
     <footer>
         1979.11.30 Male / Blood Type A<br>
-        Sanmei-gaku Logic: Cyclic Star Calculation
+        Source: Bloomberg, NHK, Reuters, CNN, Google News
     </footer>
 </div>
 
 <script>
-    // 算命学ロジック: 1979/11/30(辛未)の男性のための今日の十大主星計算
-    // 学習されているあなたならわかる、日干(辛)と日支の組み合わせをシミュレート
+    // 算命学ロジック (1979.11.30生まれ専用)
     function calculateDailyStar() {
         const today = new Date();
-        const baseDate = new Date(2024, 0, 1); // 基準点
+        const baseDate = new Date(2024, 0, 1);
         const diffDays = Math.floor((today - baseDate) / (1000 * 60 * 60 * 24));
-        const starIndex = (diffDays + 5) % 10; // 十大主星のサイクル
+        const starIndex = (diffDays + 5) % 10;
 
         const stars = [
-            { name: "貫索星 (Kansaku)", desc: "自分自身の意志を貫く日。周囲に流されず、宝石としての純度を高める決断が吉です。" },
-            { name: "石門星 (Sekimon)", desc: "仲間や対等な人間関係がテーマ。辛の繊細さを共有できる仲間との交流にツキがあります。" },
-            { name: "鳳閣星 (Houkaku)", desc: "自然体で楽しむ日。美味しいものを食べ、リラックスすることで宝石の輝きが増します。" },
-            { name: "調舒星 (Choujo)", desc: "感受性が鋭くなる日。辛の持つ芸術的センスが爆発します。孤独な時間も大切に。" },
-            { name: "禄存星 (Rokoku)", desc: "愛情と引力のエネルギー。周囲に惜しみなく愛や情報を与えることで、大きな豊かさが還ります。" },
-            { name: "司禄星 (Shiroku)", desc: "着実な蓄積がテーマ。家庭や身近な場所の整理整頓、貯金など、日常の安定が運気を支えます。" },
-            { name: "車騎星 (Shaki)", desc: "スピーディーな行動の日。迷わず即断即決で動くことが、宝石を磨き上げる刺激になります。" },
-            { name: "牽牛星 (Kengyu)", desc: "自尊心と責任感。宝石としてのプライドを持って、誠実な仕事をこなすことで評価が高まります。" },
-            { name: "龍高星 (Ryuko)", desc: "冒険と改革。未知の体験や学びがあなたの感性を刺激します。現状打破のチャンス。" },
-            { name: "玉堂星 (Gyokudo)", desc: "伝統と知性。落ち着いて本を読んだり、年長者の知恵を借りることで、深い安らぎが得られます。" }
+            { name: "貫索星", desc: "自分を貫く日。宝石（辛）としての誇りを持ち、他人に流されない決断が吉です。" },
+            { name: "石門星", desc: "和合の日。仲間と協力し、宝石の輝きを周囲に分け与えるような交流が運気を上げます。" },
+            { name: "鳳閣星", desc: "伝達の日。自然体で過ごし、美味しいものを食べて、感性をリラックスさせてください。" },
+            { name: "調舒星", desc: "孤独と芸術の日。一人で静かに自分を磨き、内面的な美しさを追求するのに最適です。" },
+            { name: "禄存星", desc: "奉仕と回転財。周囲に愛情を注ぐことで、巡り巡ってあなたに大きな光が還ります。" },
+            { name: "司禄星", desc: "準備と蓄積。派手な動きより、地道な準備。宝石を丁寧に箱に納めるような慎重さが大切。" },
+            { name: "車騎星", desc: "行動と前進。迷う前に動く。スピード感のある決断が、宝石に新たな磨きをかけます。" },
+            { name: "牽牛星", desc: "自尊心と名誉。規律を守り、誠実に振る舞うことで、あなたの社会的価値が高まる日です。" },
+            { name: "龍高星", desc: "習得と改革。新しい知識を吸収し、今までの自分を壊してアップデートするチャンス。" },
+            { name: "玉堂星", desc: "知性と伝統。古典や歴史に触れたり、目上の人の教えを聞くことで深い安らぎが得られます。" }
         ];
 
-        const star = stars[starIndex];
-        document.getElementById('star-title').innerText = star.name;
-        document.getElementById('star-desc').innerText = star.desc;
+        document.getElementById('star-title').innerText = stars[starIndex].name;
+        document.getElementById('star-desc').innerText = stars[starIndex].desc;
         document.getElementById('display-date').innerText = (today.getMonth() + 1) + "月" + today.getDate() + "日";
     }
 
@@ -166,7 +142,7 @@
             const data = await res.json();
             document.getElementById('temp').innerText = Math.round(data.current.temperature_2m) + "°C";
             const weatherCodes = { 0: "快晴", 1: "晴れ", 2: "時々曇り", 3: "曇り", 61: "雨", 95: "雷雨" };
-            document.getElementById('weather-text').innerText = "Tokyo / " + (weatherCodes[data.current.weather_code] || "Fair");
+            document.getElementById('weather-text').innerText = "東京 / " + (weatherCodes[data.current.weather_code] || "Fair");
         } catch(e) {}
     }
 
@@ -174,10 +150,10 @@
         const btn = document.getElementById('refresh-btn');
         btn.innerText = "更新中...";
         const sources = [
-            { name: "Bloomberg", url: "https://news.google.com/rss/search?q=source:Bloomberg+hl:ja&hl=ja&gl=JP&ceid=JP:ja" },
-            { name: "Reuters", url: "https://news.google.com/rss/search?q=source:Reuters+hl:ja&hl=ja&gl=JP&ceid=JP:ja" },
-            { name: "NHK NEWS", url: "https://www3.nhk.or.jp/rss/news/cat0.xml" },
-            { name: "World News", url: "https://news.google.com/rss/headlines/section/topic/WORLD?hl=ja&gl=JP&ceid=JP:ja" }
+            { name: "Bloomberg 経済", url: "https://news.google.com/rss/search?q=source:Bloomberg+hl:ja&hl=ja&gl=JP&ceid=JP:ja" },
+            { name: "Google 国際情勢", url: "https://news.google.com/rss/headlines/section/topic/WORLD?hl=ja&gl=JP&ceid=JP:ja" },
+            { name: "Reuters 日本語", url: "https://news.google.com/rss/search?q=source:Reuters+hl:ja&hl=ja&gl=JP&ceid=JP:ja" },
+            { name: "NHK 主要ニュース", url: "https://www3.nhk.or.jp/rss/news/cat0.xml" }
         ];
         
         let allNews = [];
@@ -193,15 +169,12 @@
             } catch (e) {}
         }
         allNews.sort((a, b) => b.time - a.time);
-        
         document.getElementById('news-feed').innerHTML = allNews.map(n => `
             <a href="${n.link}" target="_blank" class="news-item">
-                <div class="source">${n.source}</div>
-                <p class="title">${n.title}</p>
+                <div class="news-source">${n.source}</div>
+                <p class="news-title">${n.title}</p>
             </a>
         `).join('');
-        
-        document.getElementById('update-time').innerText = "最終更新: " + new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
         btn.innerText = "最新ニュースに更新";
     }
 

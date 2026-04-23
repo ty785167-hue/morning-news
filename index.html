@@ -4,104 +4,129 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Global Briefing Desk</title>
+    <title>マイ・ブリーフィング・デスク (1979.11.30)</title>
     <style>
-        :root { --bg-color: #0d1117; --card-bg: #161b22; --text-main: #c9d1d9; --text-dim: #8b949e; --accent: #58a6ff; }
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; }
-        .container { max-width: 800px; margin: 0 auto; }
-        header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 25px; }
-        .title-area h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; }
-        .weather-area { text-align: right; }
-        .temp { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
-        .condition { font-size: 0.9rem; color: var(--text-dim); }
-        .section-title { font-size: 0.9rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin: 30px 0 15px; border-left: 3px solid var(--accent); padding-left: 10px; }
-        .news-item { background: var(--card-bg); padding: 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #30363d; transition: 0.2s; text-decoration: none; display: block; }
-        .news-item:hover { border-color: var(--accent); background: #1c2128; }
-        .news-source { font-size: 0.75rem; font-weight: bold; color: var(--accent); margin-bottom: 5px; }
-        .news-headline { font-size: 1.05rem; font-weight: 500; color: var(--text-main); margin: 0; }
-        .news-time { font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; }
-        .loading { color: var(--text-dim); font-style: italic; font-size: 0.9rem; }
-        footer { text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 50px; padding-bottom: 20px; }
+        :root { --bg-color: #0d1117; --card-bg: #161b22; --text-main: #c9d1d9; --text-dim: #8b949e; --accent: #d4af37; --highlight: #58a6ff; }
+        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", "Hiragino Sans", sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 15px; line-height: 1.6; }
+        .container { max-width: 600px; margin: 0 auto; }
+        
+        header { border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center; }
+        header h1 { margin: 0; font-size: 1.2rem; color: var(--accent); letter-spacing: 1px; }
+        .temp { font-size: 1.6rem; font-weight: bold; color: var(--text-main); }
+        .weather-desc { font-size: 0.8rem; color: var(--text-dim); text-align: right; }
+
+        /* 算命学カード */
+        .fortune-card { background: linear-gradient(145deg, #1c2128, #161b22); border: 1px solid var(--accent); border-radius: 12px; padding: 20px; margin-bottom: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .fortune-header { font-size: 0.8rem; color: var(--accent); font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #30363d; padding-bottom: 5px; }
+        .fortune-nikkan { font-size: 0.9rem; color: var(--text-dim); margin-bottom: 5px; }
+        .fortune-main { font-size: 1.1rem; font-weight: bold; line-height: 1.5; color: #fff; }
+
+        /* ニュースセクション */
+        .section-label { font-size: 0.9rem; color: var(--accent); font-weight: bold; margin: 25px 0 10px; padding-left: 8px; border-left: 3px solid var(--accent); }
+        .news-item { background: var(--card-bg); border: 1px solid #30363d; border-radius: 8px; padding: 15px; margin-bottom: 12px; text-decoration: none; display: block; transition: 0.2s; }
+        .news-item:hover { border-color: var(--accent); background: #1c2128; transform: translateY(-2px); }
+        .news-source { font-size: 0.7rem; font-weight: bold; color: var(--highlight); margin-bottom: 5px; }
+        .news-headline { font-size: 1rem; font-weight: 500; color: var(--text-main); margin: 0; line-height: 1.4; }
+        .news-time { font-size: 0.7rem; color: var(--text-dim); margin-top: 8px; text-align: right; }
+
+        footer { text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 40px; padding-bottom: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
     <header>
-        <div class="title-area">
-            <h1>GLOBAL BRIEFING</h1>
-            <div id="last-update" class="condition">Initializing...</div>
+        <div>
+            <h1 id="today-date">--月--日</h1>
+            <div style="font-size: 0.8rem; color: var(--text-dim);">1979.11.30 男性の運勢</div>
         </div>
-        <div id="weather" class="weather-area">
-            <div class="temp">--°C</div>
-            <div class="condition">Tokyo Loading...</div>
+        <div class="weather">
+            <div id="temp-display" class="temp">--°C</div>
+            <div id="weather-desc" class="weather-desc">東京</div>
         </div>
     </header>
 
-    <div id="briefing-content">
-        <div class="section-title">World Headlines</div>
-        <div id="news-feed" class="loading">Fetching latest intelligence...</div>
+    <!-- 算命学セクション -->
+    <div class="fortune-card">
+        <div class="fortune-header">算命学・今日の運勢</div>
+        <div class="fortune-nikkan">日干：辛（宝石）</div>
+        <div id="fortune-text" class="fortune-main">運勢を算出中...</div>
+    </div>
+
+    <div id="news-section">
+        <div class="section-label">主要ニュース（日本語）</div>
+        <div id="news-feed" style="font-size: 0.9rem; color: var(--text-dim);">ニュースを取得中...</div>
     </div>
 
     <footer>
-        Data updated automatically. Sources: Reuters, CNN, BBC, Open-Meteo.
+        1時間ごとに自動更新<br>
+        Source: NHK, Reuters JP, CNN JP, Open-Meteo
     </footer>
 </div>
 
 <script>
-    const WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code";
-    const NEWS_SOURCES = [
-        { name: "REUTERS", url: "https://www.reutersagency.com/feed/?best-topics=political-general&post_type=best" },
-        { name: "CNN", url: "http://rss.cnn.com/rss/edition_world.rss" },
-        { name: "BBC", url: "https://feeds.bbci.co.uk/news/world/rss.xml" }
-    ];
+    // 1979年11月30日生まれの日干「辛（しん）」の運勢ロジック
+    function updateFortune() {
+        const today = new Date();
+        const dateStr = `${today.getMonth() + 1}月${today.getDate()}日`;
+        document.getElementById('today-date').innerText = dateStr;
 
-    function getWeatherDesc(code) {
-        const mapping = { 0: "晴天", 1: "ほぼ晴れ", 2: "薄曇り", 3: "曇り", 45: "霧", 51: "霧雨", 61: "小雨", 71: "小雪", 95: "雷雨" };
-        return mapping[code] || "不明";
+        // 日替わりで運勢をローテーション（辛の性質に合わせたメッセージ）
+        const cycle = (today.getFullYear() + today.getMonth() + today.getDate()) % 5;
+        const fortunes = [
+            "【自分を磨く日】宝石であるあなたに磨きがかかる日です。少し厳しい意見も成長の糧になります。",
+            "【輝きを放つ日】周囲からの注目が集まりやすい日。自分の意見を堂々と発表して吉。",
+            "【感性が冴える日】繊細な感性が高まります。芸術や音楽に触れることで運気がアップします。",
+            "【守りを固める日】今日は派手な動きを控え、足元を固めるとき。丁寧な仕事が信頼を生みます。",
+            "【社交を楽しむ日】宝石が光を反射するように、人との交流で活力が生まれます。連絡を疎かにせず。"
+        ];
+        document.getElementById('fortune-text').innerText = fortunes[cycle];
     }
 
     async function updateWeather() {
         try {
-            const res = await fetch(WEATHER_URL);
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code");
             const data = await res.json();
-            document.getElementById('weather').innerHTML = `
-                <div class="temp">${Math.round(data.current.temperature_2m)}°C</div>
-                <div class="condition">Tokyo / ${getWeatherDesc(data.current.weather_code)}</div>
-            `;
-        } catch (e) { console.error("Weather error"); }
+            document.getElementById('temp-display').innerText = Math.round(data.current.temperature_2m) + "°C";
+            const weatherMap = { 0: "快晴", 1: "晴れ", 2: "時々曇り", 3: "曇り", 45: "霧", 61: "雨", 95: "雷雨" };
+            document.getElementById('weather-desc').innerText = "東京 / " + (weatherMap[data.current.weather_code] || "不明");
+        } catch (e) {}
     }
 
     async function updateNews() {
+        const sources = [
+            { name: "NHK NEWS", url: "https://www3.nhk.or.jp/rss/news/cat0.xml" },
+            { name: "Reuters Japan", url: "https://news.google.com/rss/search?q=source:Reuters+hl:ja&hl=ja&gl=JP&ceid=JP:ja" },
+            { name: "CNN Japan", url: "https://news.google.com/rss/search?q=source:CNN+hl:ja&hl=ja&gl=JP&ceid=JP:ja" }
+        ];
         const feed = document.getElementById('news-feed');
         let allNews = [];
-        for (const source of NEWS_SOURCES) {
+
+        for (const s of sources) {
             try {
-                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`);
+                const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(s.url)}`);
                 const data = await res.json();
                 if (data.status === 'ok') {
-                    const items = data.items.slice(0, 3).map(item => ({
-                        source: source.name, title: item.title, link: item.link, time: new Date(item.pubDate)
-                    }));
-                    allNews = [...allNews, ...items];
+                    data.items.slice(0, 4).forEach(item => {
+                        allNews.push({ source: s.name, title: item.title, link: item.link, time: new Date(item.pubDate) });
+                    });
                 }
-            } catch (e) { console.error(source.name); }
+            } catch (e) {}
         }
         allNews.sort((a, b) => b.time - a.time);
-        feed.innerHTML = allNews.map(item => `
-            <a href="${item.link}" target="_blank" class="news-item">
-                <div class="news-source">${item.source}</div>
-                <p class="news-headline">${item.title}</p>
-                <div class="news-time">${item.time.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}</div>
+        feed.innerHTML = allNews.map(n => `
+            <a href="${n.link}" target="_blank" class="news-item">
+                <div class="news-source">${n.source}</div>
+                <p class="news-headline">${n.title}</p>
+                <div class="news-time">${n.time.getHours()}:${n.time.getMinutes().toString().padStart(2, '0')} 更新</div>
             </a>
         `).join('');
-        document.getElementById('last-update').innerText = "Last Update: " + new Date().toLocaleTimeString();
     }
 
-    function refresh() { updateWeather(); updateNews(); }
+    function refresh() { updateFortune(); updateWeather(); updateNews(); }
     refresh();
-    setInterval(refresh, 3600000);
-    window.addEventListener('focus', refresh);
+    setInterval(refresh, 3600000); // 1時間ごとに更新
+    window.addEventListener('focus', refresh); // タブに戻った時に更新
 </script>
 </body>
 </html>

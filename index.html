@@ -1,0 +1,148 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+  <meta http-equiv="Content-Style-Type" content="text/css">
+  <title></title>
+  <meta name="Generator" content="Cocoa HTML Writer">
+  <meta name="CocoaVersion" content="2685.4">
+  <style type="text/css">
+    p.p1 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica}
+    p.p2 {margin: 0.0px 0.0px 0.0px 0.0px; font: 12.0px Helvetica; min-height: 14.0px}
+  </style>
+</head>
+<body>
+<p class="p1">&lt;!DOCTYPE html&gt;</p>
+<p class="p1">&lt;html lang="ja"&gt;</p>
+<p class="p1">&lt;head&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta charset="UTF-8"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;meta name="viewport" content="width=device-width, initial-scale=1.0"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;title&gt;Global Briefing Desk&lt;/title&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;style&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>:root { --bg-color: #0d1117; --card-bg: #161b22; --text-main: #c9d1d9; --text-dim: #8b949e; --accent: #58a6ff; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.container { max-width: 800px; margin: 0 auto; }</p>
+<p class="p2"><span class="Apple-converted-space">        </span></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* Header &amp; Weather */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 25px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.title-area h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.weather-area { text-align: right; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.temp { font-size: 1.8rem; font-weight: bold; color: var(--accent); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.condition { font-size: 0.9rem; color: var(--text-dim); }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>/* News Section */</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.section-title { font-size: 0.9rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin: 30px 0 15px; border-left: 3px solid var(--accent); padding-left: 10px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.news-item { background: var(--card-bg); padding: 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #30363d; transition: 0.2s; text-decoration: none; display: block; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.news-item:hover { border-color: var(--accent); background: #1c2128; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.news-source { font-size: 0.75rem; font-weight: bold; color: var(--accent); margin-bottom: 5px; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.news-headline { font-size: 1.05rem; font-weight: 500; color: var(--text-main); margin: 0; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>.news-time { font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; }</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>.loading { color: var(--text-dim); font-style: italic; font-size: 0.9rem; }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>footer { text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 50px; padding-bottom: 20px; }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/style&gt;</p>
+<p class="p1">&lt;/head&gt;</p>
+<p class="p1">&lt;body&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;div class="container"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;header&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="title-area"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;h1&gt;GLOBAL BRIEFING&lt;/h1&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div id="last-update" class="condition"&gt;Initializing...&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="weather-area" id="weather"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="temp"&gt;--°C&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;div class="condition"&gt;Tokyo Loading...&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/header&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;div id="briefing-content"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div class="section-title"&gt;World Headlines&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>&lt;div id="news-feed" class="loading"&gt;Fetching latest intelligence...&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;footer&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>Data updated automatically. Sources: Reuters, CNN, BBC, Open-Meteo.</p>
+<p class="p1"><span class="Apple-converted-space">    </span>&lt;/footer&gt;</p>
+<p class="p1">&lt;/div&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;script&gt;</p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 設定</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=35.6895&amp;longitude=139.6917&amp;current=temperature_2m,weather_code";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>const NEWS_SOURCES = [</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{ name: "REUTERS", url: "https://www.reutersagency.com/feed/?best-topics=political-general&amp;post_type=best" },</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{ name: "CNN", url: "http://rss.cnn.com/rss/edition_world.rss" },</p>
+<p class="p1"><span class="Apple-converted-space">        </span>{ name: "BBC", url: "https://feeds.bbci.co.uk/news/world/rss.xml" }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 天気コードを日本語に変換</p>
+<p class="p1"><span class="Apple-converted-space">    </span>function getWeatherDesc(code) {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const mapping = { 0: "晴天", 1: "ほぼ晴れ", 2: "薄曇り", 3: "曇り", 45: "霧", 51: "霧雨", 61: "小雨", 71: "小雪", 95: "雷雨" };</p>
+<p class="p1"><span class="Apple-converted-space">        </span>return mapping[code] || "不明";</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function updateWeather() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const res = await fetch(WEATHER_URL);</p>
+<p class="p1"><span class="Apple-converted-space">            </span>const data = await res.json();</p>
+<p class="p1"><span class="Apple-converted-space">            </span>document.getElementById('weather').innerHTML = `</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="temp"&gt;${Math.round(data.current.temperature_2m)}°C&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="condition"&gt;Tokyo / ${getWeatherDesc(data.current.weather_code)}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>`;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>} catch (e) { console.error("Weather error"); }</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>async function updateNews() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>const feed = document.getElementById('news-feed');</p>
+<p class="p1"><span class="Apple-converted-space">        </span>let allNews = [];</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>for (const source of NEWS_SOURCES) {</p>
+<p class="p1"><span class="Apple-converted-space">            </span>try {</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`);</p>
+<p class="p1"><span class="Apple-converted-space">                </span>const data = await res.json();</p>
+<p class="p1"><span class="Apple-converted-space">                </span>if (data.status === 'ok') {</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>// 各ソースから上位3件を抽出</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>const items = data.items.slice(0, 3).map(item =&gt; ({</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>source: source.name,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>title: item.title,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>link: item.link,</p>
+<p class="p1"><span class="Apple-converted-space">                        </span>time: new Date(item.pubDate)</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>}));</p>
+<p class="p1"><span class="Apple-converted-space">                    </span>allNews = [...allNews, ...items];</p>
+<p class="p1"><span class="Apple-converted-space">                </span>}</p>
+<p class="p1"><span class="Apple-converted-space">            </span>} catch (e) { console.error(source.name + " error"); }</p>
+<p class="p1"><span class="Apple-converted-space">        </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>// 時間順に並び替え</p>
+<p class="p1"><span class="Apple-converted-space">        </span>allNews.sort((a, b) =&gt; b.time - a.time);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>feed.innerHTML = allNews.map(item =&gt; `</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;a href="${item.link}" target="_blank" class="news-item"&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="news-source"&gt;${item.source}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;p class="news-headline"&gt;${item.title}&lt;/p&gt;</p>
+<p class="p1"><span class="Apple-converted-space">                </span>&lt;div class="news-time"&gt;${item.time.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}&lt;/div&gt;</p>
+<p class="p1"><span class="Apple-converted-space">            </span>&lt;/a&gt;</p>
+<p class="p1"><span class="Apple-converted-space">        </span>`).join('');</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">        </span>document.getElementById('last-update').innerText = "Last Update: " + new Date().toLocaleTimeString();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>function refresh() {</p>
+<p class="p1"><span class="Apple-converted-space">        </span>updateWeather();</p>
+<p class="p1"><span class="Apple-converted-space">        </span>updateNews();</p>
+<p class="p1"><span class="Apple-converted-space">    </span>}</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 初回実行</p>
+<p class="p1"><span class="Apple-converted-space">    </span>refresh();</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// 1時間ごとに自動更新 (3600000ミリ秒)</p>
+<p class="p1"><span class="Apple-converted-space">    </span>setInterval(refresh, 3600000);</p>
+<p class="p2"><br></p>
+<p class="p1"><span class="Apple-converted-space">    </span>// ページに戻ってきた時（タブを切り替えた時など）に更新</p>
+<p class="p1"><span class="Apple-converted-space">    </span>window.addEventListener('focus', refresh);</p>
+<p class="p1">&lt;/script&gt;</p>
+<p class="p2"><br></p>
+<p class="p1">&lt;/body&gt;</p>
+<p class="p1">&lt;/html&gt;</p>
+</body>
+</html>

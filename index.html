@@ -1,29 +1,25 @@
 <!DOCTYPE html>
-<html lang="ja">
+<html lang="ja" class="notranslate">
 <head>
     <meta charset="UTF-8">
+    <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Global Briefing Desk</title>
     <style>
         :root { --bg-color: #0d1117; --card-bg: #161b22; --text-main: #c9d1d9; --text-dim: #8b949e; --accent: #58a6ff; }
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif; background-color: var(--bg-color); color: var(--text-main); margin: 0; padding: 20px; line-height: 1.6; }
         .container { max-width: 800px; margin: 0 auto; }
-        
-        /* Header & Weather */
         header { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 1px solid #30363d; padding-bottom: 15px; margin-bottom: 25px; }
         .title-area h1 { margin: 0; font-size: 1.5rem; letter-spacing: -0.5px; }
         .weather-area { text-align: right; }
         .temp { font-size: 1.8rem; font-weight: bold; color: var(--accent); }
         .condition { font-size: 0.9rem; color: var(--text-dim); }
-
-        /* News Section */
         .section-title { font-size: 0.9rem; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin: 30px 0 15px; border-left: 3px solid var(--accent); padding-left: 10px; }
         .news-item { background: var(--card-bg); padding: 15px; border-radius: 6px; margin-bottom: 10px; border: 1px solid #30363d; transition: 0.2s; text-decoration: none; display: block; }
         .news-item:hover { border-color: var(--accent); background: #1c2128; }
         .news-source { font-size: 0.75rem; font-weight: bold; color: var(--accent); margin-bottom: 5px; }
         .news-headline { font-size: 1.05rem; font-weight: 500; color: var(--text-main); margin: 0; }
         .news-time { font-size: 0.75rem; color: var(--text-dim); margin-top: 8px; }
-
         .loading { color: var(--text-dim); font-style: italic; font-size: 0.9rem; }
         footer { text-align: center; font-size: 0.7rem; color: var(--text-dim); margin-top: 50px; padding-bottom: 20px; }
     </style>
@@ -36,7 +32,7 @@
             <h1>GLOBAL BRIEFING</h1>
             <div id="last-update" class="condition">Initializing...</div>
         </div>
-        <div class="weather-area" id="weather">
+        <div id="weather" class="weather-area">
             <div class="temp">--°C</div>
             <div class="condition">Tokyo Loading...</div>
         </div>
@@ -53,7 +49,6 @@
 </div>
 
 <script>
-    // 設定
     const WEATHER_URL = "https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code";
     const NEWS_SOURCES = [
         { name: "REUTERS", url: "https://www.reutersagency.com/feed/?best-topics=political-general&post_type=best" },
@@ -61,7 +56,6 @@
         { name: "BBC", url: "https://feeds.bbci.co.uk/news/world/rss.xml" }
     ];
 
-    // 天気コードを日本語に変換
     function getWeatherDesc(code) {
         const mapping = { 0: "晴天", 1: "ほぼ晴れ", 2: "薄曇り", 3: "曇り", 45: "霧", 51: "霧雨", 61: "小雨", 71: "小雪", 95: "雷雨" };
         return mapping[code] || "不明";
@@ -81,27 +75,19 @@
     async function updateNews() {
         const feed = document.getElementById('news-feed');
         let allNews = [];
-
         for (const source of NEWS_SOURCES) {
             try {
                 const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(source.url)}`);
                 const data = await res.json();
                 if (data.status === 'ok') {
-                    // 各ソースから上位3件を抽出
                     const items = data.items.slice(0, 3).map(item => ({
-                        source: source.name,
-                        title: item.title,
-                        link: item.link,
-                        time: new Date(item.pubDate)
+                        source: source.name, title: item.title, link: item.link, time: new Date(item.pubDate)
                     }));
                     allNews = [...allNews, ...items];
                 }
-            } catch (e) { console.error(source.name + " error"); }
+            } catch (e) { console.error(source.name); }
         }
-
-        // 時間順に並び替え
         allNews.sort((a, b) => b.time - a.time);
-
         feed.innerHTML = allNews.map(item => `
             <a href="${item.link}" target="_blank" class="news-item">
                 <div class="news-source">${item.source}</div>
@@ -109,24 +95,13 @@
                 <div class="news-time">${item.time.toLocaleTimeString('ja-JP', {hour: '2-digit', minute:'2-digit'})}</div>
             </a>
         `).join('');
-
         document.getElementById('last-update').innerText = "Last Update: " + new Date().toLocaleTimeString();
     }
 
-    function refresh() {
-        updateWeather();
-        updateNews();
-    }
-
-    // 初回実行
+    function refresh() { updateWeather(); updateNews(); }
     refresh();
-
-    // 1時間ごとに自動更新 (3600000ミリ秒)
     setInterval(refresh, 3600000);
-
-    // ページに戻ってきた時（タブを切り替えた時など）に更新
     window.addEventListener('focus', refresh);
 </script>
-
 </body>
 </html>

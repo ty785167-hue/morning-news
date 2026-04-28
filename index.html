@@ -4,106 +4,67 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dynamic Sky Briefing</title>
+    <title>Ultimate Briefing Desk</title>
     <style>
         :root { 
-            --text-main: #ffffff;
-            --text-dim: rgba(255, 255, 255, 0.7);
             --accent: #ffd700;
+            --card-bg: rgba(255, 255, 255, 0.1);
         }
         
-        /* 時間帯による背景の変化 */
         body { 
-            font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; 
-            margin: 0; padding: 15px; line-height: 1.6;
-            min-height: 100vh;
-            transition: background 2s ease;
-            color: var(--text-main);
-            background: #050a14; /* デフォルトは夜 */
+            font-family: "Helvetica Neue", Arial, sans-serif; 
+            margin: 0; padding: 10px; line-height: 1.5;
+            min-height: 100vh; transition: background 3s ease; color: #fff;
+            background: #050a14;
         }
 
-        /* 背景バリエーション */
+        /* 空の状態 */
         body.day { background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%); color: #003366; }
         body.twilight { background: linear-gradient(180deg, #fa709a 0%, #fee140 100%); color: #4a0000; }
         body.night { background: linear-gradient(180deg, #050a14 0%, #1a2a44 100%); color: #ffffff; }
 
-        .container { max-width: 650px; margin: 0 auto; }
+        .container { max-width: 800px; margin: 0 auto; }
         
-        header { 
-            position: relative;
-            padding: 40px 0 20px;
-            text-align: center;
+        header { position: relative; padding: 50px 0 20px; text-align: center; }
+        #celestial-body { position: absolute; left: 50%; transform: translateX(-50%); font-size: 60px; transition: all 3s ease; z-index: 0; }
+
+        .info-panel { 
+            position: relative; z-index: 1; background: rgba(255, 255, 255, 0.2); 
+            backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; 
+            border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.1);
         }
 
-        /* 動的な太陽・月のアイコン */
-        #celestial-body {
-            position: absolute;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 80px;
-            height: 80px;
-            font-size: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: all 2s ease-in-out;
-            z-index: 0;
+        .temp-main { font-size: 2.5rem; font-weight: bold; margin: 0; }
+        .astro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; margin-top: 10px; opacity: 0.9; }
+
+        /* カテゴリータブ */
+        .category-nav { 
+            display: flex; overflow-x: auto; gap: 8px; padding: 15px 0;
+            scrollbar-width: none; -ms-overflow-style: none;
         }
-
-        .info-panel {
-            position: relative;
-            z-index: 1;
-            background: rgba(255, 255, 255, 0.15);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 20px;
-            margin-top: 60px;
-            border: 1px solid rgba(255, 255, 255, 0.2);
+        .category-nav::-webkit-scrollbar { display: none; }
+        .tab { 
+            flex: 0 0 auto; padding: 8px 16px; border-radius: 20px; 
+            background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3);
+            color: inherit; cursor: pointer; font-size: 0.85rem; font-weight: bold;
         }
+        .tab.active { background: #fff; color: #000; border-color: #fff; }
 
-        .temp-row { font-size: 3rem; font-weight: bold; margin: 0; }
-        .weather-icon { font-size: 1.5rem; vertical-align: middle; margin-left: 10px; }
-
-        .astro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 15px; font-size: 0.85rem; }
-
-        /* 更新ボタン */
-        .refresh-nav { text-align: center; margin: 25px 0; }
-        #refresh-btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid currentColor;
-            color: inherit;
-            padding: 12px 30px;
-            border-radius: 50px;
-            cursor: pointer;
-            font-size: 1rem;
-            font-weight: bold;
-            transition: 0.3s;
+        /* ニュースカード */
+        .news-container { display: none; }
+        .news-container.active { display: block; }
+        .news-card {
+            background: rgba(255, 255, 255, 0.1); border-radius: 12px;
+            padding: 15px; margin-bottom: 10px; text-decoration: none;
+            color: inherit; display: block; border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        #refresh-btn:hover { background: rgba(255, 255, 255, 0.4); transform: scale(1.05); }
+        .news-card:hover { background: rgba(255, 255, 255, 0.2); }
+        .news-meta { font-size: 0.7rem; opacity: 0.7; margin-bottom: 4px; font-weight: bold; }
 
-        /* 占い・ニュースカード */
-        .card {
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 15px;
-            padding: 20px;
-            margin-bottom: 20px;
-        }
-        .zodiac-title { font-size: 1.2rem; font-weight: bold; margin-bottom: 10px; }
-        
-        .news-item {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 10px;
-            padding: 15px;
-            margin-bottom: 10px;
-            text-decoration: none;
-            color: inherit;
-            display: block;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        .news-item:hover { background: rgba(255, 255, 255, 0.2); }
-        .news-source { font-size: 0.7rem; font-weight: bold; opacity: 0.8; margin-bottom: 5px; text-transform: uppercase; }
+        /* 占い */
+        .fortune-area { background: rgba(0,0,0,0.15); padding: 15px; border-radius: 15px; margin: 15px 0; border-left: 5px solid var(--accent); }
 
-        footer { text-align: center; font-size: 0.7rem; opacity: 0.6; padding: 40px 0; }
+        footer { text-align: center; font-size: 0.7rem; padding: 40px 0; opacity: 0.6; }
     </style>
 </head>
 <body>
@@ -112,128 +73,146 @@
     <header>
         <div id="celestial-body">☀️</div>
         <div class="info-panel">
-            <div id="display-date" style="font-weight: bold; letter-spacing: 2px;">--月--日</div>
-            <div class="temp-row">
-                <span id="temp">--</span>°C<span id="weather-icon" class="weather-icon">--</span>
-            </div>
-            <div id="weather-text">Loading Weather...</div>
-            
+            <div id="display-date" style="font-size: 1.1rem; font-weight: bold;">--月--日</div>
+            <div class="temp-main"><span id="temp">--</span>°C <span id="weather-icon">--</span></div>
+            <div id="weather-text" style="font-size: 0.9rem;">Loading Sky...</div>
             <div class="astro-grid">
-                <div>🌅 日の出: <span id="sunrise-time">--:--</span></div>
-                <div>🌇 日没: <span id="sunset-time">--:--</span></div>
+                <div>🌅 Sunrise: <span id="sunrise-time">--:--</span></div>
+                <div>🌇 Sunset: <span id="sunset-time">--:--</span></div>
             </div>
         </div>
     </header>
 
-    <div class="refresh-nav">
-        <button id="refresh-btn" onclick="refreshAll()">最新ニュースに更新</button>
+    <div class="fortune-area">
+        <div style="font-size: 0.8rem; font-weight: bold; color: var(--accent);">🏹 射手座 (11/30) 運勢</div>
+        <div id="fortune-text">運勢を取得中...</div>
     </div>
 
-    <div class="card">
-        <div class="zodiac-title">🏹 射手座 (11/30) 今日の運勢</div>
-        <div id="fortune-text">Loading Fortune...</div>
+    <div style="text-align:center;"><button onclick="refreshAll()" style="background:none; border:1px solid currentColor; color:inherit; padding:5px 20px; border-radius:20px; cursor:pointer; font-size:0.8rem;">更新</button></div>
+
+    <!-- カテゴリーナビ -->
+    <div class="category-nav" id="tab-list">
+        <!-- JSで生成 -->
     </div>
 
-    <div style="font-size: 0.8rem; font-weight: bold; margin: 20px 0 10px; opacity: 0.8; letter-spacing: 1px;">WORLD & ECONOMY NEWS</div>
-    <div id="news-feed"></div>
+    <!-- ニュース表示エリア -->
+    <div id="news-content">
+        <!-- JSで生成 -->
+    </div>
 
     <footer>
-        1979.11.30 Male / Sagittarius<br>
-        Open-Meteo API / Google & Bloomberg News
+        1979.11.30 / Sagittarius / Tokyo Office<br>
+        Powered by Open-Meteo & Google News RSS
     </footer>
 </div>
 
 <script>
-    // 天候コードをアイコンに変換
-    function getWeatherInfo(code) {
-        if (code <= 1) return { icon: "☀️", text: "快晴" };
-        if (code <= 3) return { icon: "☁️", text: "曇り" };
-        if (code <= 48) return { icon: "🌫️", text: "霧" };
-        if (code <= 67) return { icon: "🌧️", text: "雨" };
-        if (code <= 77) return { icon: "❄️", text: "雪" };
-        if (code <= 82) return { icon: "🌦️", text: "にわか雨" };
-        return { icon: "⛈️", text: "雷雨" };
+    const CATEGORIES = [
+        { id: "main", label: "主要", q: "" },
+        { id: "economy", label: "世界経済", q: "世界経済 OR Bloomberg OR Reuters" },
+        { id: "japan", label: "日本国内", q: "日本ニュース" },
+        { id: "spain", label: "スペイン", q: "スペイン ニュース" },
+        { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション" },
+        { id: "ai", label: "最新AI", q: "AI 最新 OR 人工知能" },
+        { id: "nutrition", label: "精密栄養学", q: "精密栄養学 OR パーソナライズ栄養" },
+        { id: "music", label: "機能性音楽", q: "機能性音楽 OR 音楽療法 研究" },
+        { id: "health", label: "健康知識", q: "健康 最新 研究" }
+    ];
+
+    let currentTab = "main";
+
+    function createTabs() {
+        const nav = document.getElementById('tab-list');
+        const content = document.getElementById('news-content');
+        nav.innerHTML = "";
+        content.innerHTML = "";
+
+        CATEGORIES.forEach(cat => {
+            const btn = document.createElement('button');
+            btn.className = `tab ${cat.id === currentTab ? 'active' : ''}`;
+            btn.innerText = cat.label;
+            btn.onclick = () => switchTab(cat.id);
+            nav.appendChild(btn);
+
+            const div = document.createElement('div');
+            div.id = `news-list-${cat.id}`;
+            div.className = `news-container ${cat.id === currentTab ? 'active' : ''}`;
+            div.innerHTML = "読み込み中...";
+            content.appendChild(div);
+        });
+    }
+
+    async function switchTab(id) {
+        currentTab = id;
+        createTabs();
+        await fetchNewsForCategory(id);
+    }
+
+    async function fetchNewsForCategory(id) {
+        const cat = CATEGORIES.find(c => c.id === id);
+        const container = document.getElementById(`news-list-${id}`);
+        try {
+            const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`https://news.google.com/rss/search?q=${cat.q}&hl=ja&gl=JP&ceid=JP:ja`)}`;
+            const res = await fetch(url);
+            const data = await res.json();
+            
+            container.innerHTML = data.items.slice(0, 10).map(item => `
+                <a href="${item.link}" target="_blank" class="news-card">
+                    <div class="news-meta">${item.pubDate.split(' ')[0]}</div>
+                    <div class="news-title">${item.title}</div>
+                </a>
+            `).join('');
+        } catch (e) {
+            container.innerHTML = "取得に失敗しました。";
+        }
     }
 
     async function refreshAll() {
-        const btn = document.getElementById('refresh-btn');
-        btn.innerText = "更新中...";
+        // 天気・太陽の計算
+        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=Asia%2FTokyo");
+        const d = await res.json();
         
-        try {
-            // 1. 天気・天文データ取得
-            const weatherRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=Asia%2FTokyo");
-            const wData = await weatherRes.json();
-            
-            const now = new Date();
-            const sunrise = new Date(wData.daily.sunrise[0]);
-            const sunset = new Date(wData.daily.sunset[0]);
-            const temp = Math.round(wData.current.temperature_2m);
-            const wInfo = getWeatherInfo(wData.current.weather_code);
+        const now = new Date();
+        const sunrise = new Date(d.daily.sunrise[0]);
+        const sunset = new Date(d.daily.sunset[0]);
+        
+        document.getElementById('temp').innerText = Math.round(d.current.temperature_2m);
+        document.getElementById('sunrise-time').innerText = sunrise.getHours() + ":" + sunrise.getMinutes().toString().padStart(2, '0');
+        document.getElementById('sunset-time').innerText = sunset.getHours() + ":" + sunset.getMinutes().toString().padStart(2, '0');
+        document.getElementById('display-date').innerText = (now.getMonth()+1) + "月" + now.getDate() + "日";
 
-            // 表示更新
-            document.getElementById('temp').innerText = temp;
-            document.getElementById('weather-icon').innerText = wInfo.icon;
-            document.getElementById('weather-text').innerText = wInfo.text;
-            document.getElementById('display-date').innerText = (now.getMonth() + 1) + "月" + now.getDate() + "日";
-            document.getElementById('sunrise-time').innerText = sunrise.getHours() + ":" + sunrise.getMinutes().toString().padStart(2, '0');
-            document.getElementById('sunset-time').innerText = sunset.getHours() + ":" + sunset.getMinutes().toString().padStart(2, '0');
+        // 天気アイコン
+        const code = d.current.weather_code;
+        let icon = "☀️"; let txt = "快晴";
+        if (code > 1) { icon = "☁️"; txt = "曇り"; }
+        if (code > 50) { icon = "🌧️"; txt = "雨"; }
+        document.getElementById('weather-icon').innerText = icon;
+        document.getElementById('weather-text').innerText = txt;
 
-            // 2. ビジュアルの動的変化（太陽・月・背景）
-            const body = document.body;
-            const celestial = document.getElementById('celestial-body');
-            
-            if (now > sunrise && now < sunset) {
-                // 昼間
-                const totalDaylight = sunset - sunrise;
-                const progress = (now - sunrise) / totalDaylight; // 0 to 1
-                
-                // 太陽の高さ（放物線）
-                celestial.innerText = "☀️";
-                celestial.style.top = (20 + (1 - Math.sin(Math.PI * progress)) * 40) + "px";
-                
-                if (progress < 0.1 || progress > 0.9) {
-                    body.className = "twilight";
-                } else {
-                    body.className = "day";
-                }
-            } else {
-                // 夜
-                body.className = "night";
-                celestial.innerText = "🌙";
-                celestial.style.top = "30px";
-            }
-
-            // 3. 占い
-            const cycle = (now.getFullYear() + now.getMonth() + now.getDate()) % 5;
-            const fortunes = [
-                "【絶好調】新しい挑戦が実を結ぶ日。直感を信じて進んでください。",
-                "【知的好奇心】学びが深まる日。ニュースの裏側を読むと発見があります。",
-                "【対人運】あなたの楽観的な言葉が周囲に光を与えます。交流を楽しんで。",
-                "【調整】一歩引いて全体を見る日。落ち着いた判断が大きなミスを防ぎます。",
-                "【充実】自分へのご褒美を。好きな音楽や食事で感性を満たしましょう。"
-            ];
-            document.getElementById('fortune-text').innerText = fortunes[cycle];
-
-            // 4. ニュース取得
-            const newsRes = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent("https://news.google.com/rss/search?q=source:Bloomberg+OR+source:Reuters+OR+source:NHK&hl=ja&gl=JP&ceid=JP:ja")}`);
-            const nData = await newsRes.json();
-            
-            document.getElementById('news-feed').innerHTML = nData.items.slice(0, 15).map(item => `
-                <a href="${item.link}" target="_blank" class="news-item">
-                    <div class="news-source">${item.title.split(' - ')[1] || 'NEWS'}</div>
-                    <p class="title">${item.title.split(' - ')[0]}</p>
-                </a>
-            `).join('');
-
-        } catch (e) {
-            console.error(e);
+        // 空と太陽のビジュアル
+        const celestial = document.getElementById('celestial-body');
+        if (now > sunrise && now < sunset) {
+            const progress = (now - sunrise) / (sunset - sunrise);
+            celestial.innerText = "☀️";
+            celestial.style.top = (20 + (1 - Math.sin(Math.PI * progress)) * 50) + "px";
+            document.body.className = (progress < 0.1 || progress > 0.9) ? "twilight" : "day";
+        } else {
+            celestial.innerText = "🌙";
+            celestial.style.top = "30px";
+            document.body.className = "night";
         }
-        btn.innerText = "最新ニュースに更新";
+
+        // 占い
+        const cycle = (now.getDate()) % 5;
+        const fts = ["【最高】冒険心が道を切り拓く日。","【知性】学びが深い。ニュースから着想を。","【交流】人との会話に幸運のヒントが。","【慎重】一歩引いて全体を眺めると吉。","【休息】自分を労り、感性を満たして。"];
+        document.getElementById('fortune-text').innerText = fts[cycle];
+
+        // ニュース
+        await fetchNewsForCategory(currentTab);
     }
 
+    createTabs();
     refreshAll();
-    // 30分ごとに自動更新
-    setInterval(refreshAll, 1800000);
 </script>
 
 </body>

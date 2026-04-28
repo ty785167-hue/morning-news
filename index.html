@@ -37,6 +37,8 @@
         .temp-main { font-size: 2.5rem; font-weight: bold; margin: 0; }
         .astro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; margin-top: 10px; opacity: 0.9; }
 
+        .fortune-area { background: rgba(0,0,0,0.15); padding: 15px; border-radius: 15px; margin: 15px 0; border-left: 5px solid var(--accent); }
+
         /* カテゴリータブ */
         .category-nav { 
             display: flex; overflow-x: auto; gap: 8px; padding: 15px 0;
@@ -44,14 +46,14 @@
         }
         .category-nav::-webkit-scrollbar { display: none; }
         .tab { 
-            flex: 0 0 auto; padding: 8px 16px; border-radius: 20px; 
+            flex: 0 0 auto; padding: 10px 20px; border-radius: 25px; 
             background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3);
             color: inherit; cursor: pointer; font-size: 0.85rem; font-weight: bold;
         }
         .tab.active { background: #fff; color: #000; border-color: #fff; }
 
-        /* ニュースカード */
-        .news-container { display: none; }
+        /* ニュース表示エリア */
+        .news-container { display: none; min-height: 200px; }
         .news-container.active { display: block; }
         .news-card {
             background: rgba(255, 255, 255, 0.1); border-radius: 12px;
@@ -60,9 +62,6 @@
         }
         .news-card:hover { background: rgba(255, 255, 255, 0.2); }
         .news-meta { font-size: 0.7rem; opacity: 0.7; margin-bottom: 4px; font-weight: bold; }
-
-        /* 占い */
-        .fortune-area { background: rgba(0,0,0,0.15); padding: 15px; border-radius: 15px; margin: 15px 0; border-left: 5px solid var(--accent); }
 
         footer { text-align: center; font-size: 0.7rem; padding: 40px 0; opacity: 0.6; }
     </style>
@@ -88,17 +87,10 @@
         <div id="fortune-text">運勢を取得中...</div>
     </div>
 
-    <div style="text-align:center;"><button onclick="refreshAll()" style="background:none; border:1px solid currentColor; color:inherit; padding:5px 20px; border-radius:20px; cursor:pointer; font-size:0.8rem;">更新</button></div>
+    <div style="text-align:center;"><button onclick="refreshAll()" id="update-btn" style="background:none; border:1px solid currentColor; color:inherit; padding:8px 25px; border-radius:20px; cursor:pointer; font-size:0.9rem; font-weight:bold;">更新する</button></div>
 
-    <!-- カテゴリーナビ -->
-    <div class="category-nav" id="tab-list">
-        <!-- JSで生成 -->
-    </div>
-
-    <!-- ニュース表示エリア -->
-    <div id="news-content">
-        <!-- JSで生成 -->
-    </div>
+    <div class="category-nav" id="tab-list"></div>
+    <div id="news-content"></div>
 
     <footer>
         1979.11.30 / Sagittarius / Tokyo Office<br>
@@ -108,9 +100,9 @@
 
 <script>
     const CATEGORIES = [
-        { id: "main", label: "主要", q: "" },
+        { id: "main", label: "主要", url: "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja" },
         { id: "economy", label: "世界経済", q: "世界経済 OR Bloomberg OR Reuters" },
-        { id: "japan", label: "日本国内", q: "日本ニュース" },
+        { id: "japan", label: "日本国内", q: "日本国内 ニュース" },
         { id: "spain", label: "スペイン", q: "スペイン ニュース" },
         { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション" },
         { id: "ai", label: "最新AI", q: "AI 最新 OR 人工知能" },
@@ -137,78 +129,100 @@
             const div = document.createElement('div');
             div.id = `news-list-${cat.id}`;
             div.className = `news-container ${cat.id === currentTab ? 'active' : ''}`;
-            div.innerHTML = "読み込み中...";
+            div.innerHTML = "<p style='text-align:center; padding:20px; opacity:0.6;'>ニュースを読み込み中...</p>";
             content.appendChild(div);
         });
     }
 
     async function switchTab(id) {
         currentTab = id;
-        createTabs();
+        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        document.querySelectorAll('.news-container').forEach(c => c.classList.remove('active'));
+        
+        const activeTabBtn = Array.from(document.querySelectorAll('.tab')).find(t => t.innerText === CATEGORIES.find(c => c.id === id).label);
+        if(activeTabBtn) activeTabBtn.classList.add('active');
+        
+        const activeContent = document.getElementById(`news-list-${id}`);
+        if(activeContent) activeContent.classList.add('active');
+        
         await fetchNewsForCategory(id);
     }
 
     async function fetchNewsForCategory(id) {
         const cat = CATEGORIES.find(c => c.id === id);
         const container = document.getElementById(`news-list-${id}`);
+        
+        // GoogleニュースのURLを生成
+        let rssUrl = cat.url;
+        if (!rssUrl) {
+            rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cat.q)}&hl=ja&gl=JP&ceid=JP:ja`;
+        }
+
         try {
-            const url = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(`https://news.google.com/rss/search?q=${cat.q}&hl=ja&gl=JP&ceid=JP:ja`)}`;
-            const res = await fetch(url);
+            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
+            const res = await fetch(apiUrl);
             const data = await res.json();
             
-            container.innerHTML = data.items.slice(0, 10).map(item => `
-                <a href="${item.link}" target="_blank" class="news-card">
-                    <div class="news-meta">${item.pubDate.split(' ')[0]}</div>
-                    <div class="news-title">${item.title}</div>
-                </a>
-            `).join('');
+            if (data.status === 'ok' && data.items.length > 0) {
+                container.innerHTML = data.items.slice(0, 10).map(item => `
+                    <a href="${item.link}" target="_blank" class="news-card">
+                        <div class="news-meta">${item.pubDate.split(' ')[0]} | ${item.author || 'News'}</div>
+                        <div class="news-title">${item.title}</div>
+                    </a>
+                `).join('');
+            } else {
+                container.innerHTML = "<p style='text-align:center; padding:20px;'>現在、表示できるニュースがありません。</p>";
+            }
         } catch (e) {
-            container.innerHTML = "取得に失敗しました。";
+            container.innerHTML = "<p style='text-align:center; padding:20px;'>取得に失敗しました。時間をおいて「更新」を押してください。</p>";
         }
     }
 
     async function refreshAll() {
-        // 天気・太陽の計算
-        const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=Asia%2FTokyo");
-        const d = await res.json();
-        
-        const now = new Date();
-        const sunrise = new Date(d.daily.sunrise[0]);
-        const sunset = new Date(d.daily.sunset[0]);
-        
-        document.getElementById('temp').innerText = Math.round(d.current.temperature_2m);
-        document.getElementById('sunrise-time').innerText = sunrise.getHours() + ":" + sunrise.getMinutes().toString().padStart(2, '0');
-        document.getElementById('sunset-time').innerText = sunset.getHours() + ":" + sunset.getMinutes().toString().padStart(2, '0');
-        document.getElementById('display-date').innerText = (now.getMonth()+1) + "月" + now.getDate() + "日";
+        const updateBtn = document.getElementById('update-btn');
+        updateBtn.innerText = "更新中...";
 
-        // 天気アイコン
-        const code = d.current.weather_code;
-        let icon = "☀️"; let txt = "快晴";
-        if (code > 1) { icon = "☁️"; txt = "曇り"; }
-        if (code > 50) { icon = "🌧️"; txt = "雨"; }
-        document.getElementById('weather-icon').innerText = icon;
-        document.getElementById('weather-text').innerText = txt;
+        try {
+            const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=Asia%2FTokyo");
+            const d = await res.json();
+            
+            const now = new Date();
+            const sunrise = new Date(d.daily.sunrise[0]);
+            const sunset = new Date(d.daily.sunset[0]);
+            
+            document.getElementById('temp').innerText = Math.round(d.current.temperature_2m);
+            document.getElementById('sunrise-time').innerText = sunrise.getHours() + ":" + sunrise.getMinutes().toString().padStart(2, '0');
+            document.getElementById('sunset-time').innerText = sunset.getHours() + ":" + sunset.getMinutes().toString().padStart(2, '0');
+            document.getElementById('display-date').innerText = (now.getMonth()+1) + "月" + now.getDate() + "日";
 
-        // 空と太陽のビジュアル
-        const celestial = document.getElementById('celestial-body');
-        if (now > sunrise && now < sunset) {
-            const progress = (now - sunrise) / (sunset - sunrise);
-            celestial.innerText = "☀️";
-            celestial.style.top = (20 + (1 - Math.sin(Math.PI * progress)) * 50) + "px";
-            document.body.className = (progress < 0.1 || progress > 0.9) ? "twilight" : "day";
-        } else {
-            celestial.innerText = "🌙";
-            celestial.style.top = "30px";
-            document.body.className = "night";
+            const code = d.current.weather_code;
+            let icon = "☀️"; let txt = "快晴";
+            if (code > 1) { icon = "☁️"; txt = "曇り"; }
+            if (code > 50) { icon = "🌧️"; txt = "雨"; }
+            document.getElementById('weather-icon').innerText = icon;
+            document.getElementById('weather-text').innerText = txt;
+
+            const celestial = document.getElementById('celestial-body');
+            if (now > sunrise && now < sunset) {
+                const progress = (now - sunrise) / (sunset - sunrise);
+                celestial.innerText = "☀️";
+                celestial.style.top = (20 + (1 - Math.sin(Math.PI * progress)) * 50) + "px";
+                document.body.className = (progress < 0.1 || progress > 0.9) ? "twilight" : "day";
+            } else {
+                celestial.innerText = "🌙";
+                celestial.style.top = "30px";
+                document.body.className = "night";
+            }
+
+            const cycle = (now.getDate()) % 5;
+            const fts = ["【最高】冒険心が道を切り拓く日。","【知性】学びが深い。ニュースから着想を。","【交流】人との会話に幸運のヒントが。","【慎重】一歩引いて全体を眺めると吉。","【休息】自分を労り、感性を満たして。"];
+            document.getElementById('fortune-text').innerText = fts[cycle];
+
+            await fetchNewsForCategory(currentTab);
+        } catch (err) {
+            console.log(err);
         }
-
-        // 占い
-        const cycle = (now.getDate()) % 5;
-        const fts = ["【最高】冒険心が道を切り拓く日。","【知性】学びが深い。ニュースから着想を。","【交流】人との会話に幸運のヒントが。","【慎重】一歩引いて全体を眺めると吉。","【休息】自分を労り、感性を満たして。"];
-        document.getElementById('fortune-text').innerText = fts[cycle];
-
-        // ニュース
-        await fetchNewsForCategory(currentTab);
+        updateBtn.innerText = "更新する";
     }
 
     createTabs();

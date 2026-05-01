@@ -99,16 +99,15 @@
 </div>
 
 <script>
-    // カテゴリーの定義（金融とビザを追加）
     const CATEGORIES = [
         { id: "main", label: "主要", url: "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja" },
-        { id: "finance", label: "金融", q: "金融 OR マーケット OR 投資 OR Bloomberg" },
-        { id: "economy", label: "世界経済", q: "世界経済 OR Reuters" },
-        { id: "visa", label: "ビザ", q: "ビザ OR 在留資格 OR 出入国管理 OR VISA" },
+        { id: "finance", label: "金融", q: "金融 OR マーケット OR 投資 OR 資産運用" },
+        { id: "economy", label: "世界経済", q: "世界経済 OR Bloomberg OR Reuters" },
+        { id: "visa", label: "ビザ・移住", q: "デジタルノマドビザ OR 学生ビザ OR 永住権 OR 移住手続き" },
+        { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション OR 海外リモートワーク" },
+        { id: "spain", label: "スペイン", q: "スペイン ニュース OR スペイン 移住" },
         { id: "japan", label: "日本国内", q: "日本国内 ニュース" },
-        { id: "spain", label: "スペイン", q: "スペイン ニュース" },
-        { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション" },
-        { id: "ai", label: "最新AI", q: "AI 最新 OR 人工知能" },
+        { id: "ai", label: "最新AI", q: "AI 最新 OR 人工知能 OR ChatGPT OR LLM" },
         { id: "nutrition", label: "精密栄養学", q: "精密栄養学 OR パーソナライズ栄養" },
         { id: "music", label: "機能性音楽", q: "機能性音楽 OR 音楽療法 研究" },
         { id: "health", label: "健康知識", q: "健康 最新 研究" }
@@ -166,12 +165,10 @@
             const data = await res.json();
             
             if (data.status === 'ok' && data.items.length > 0) {
-                // ★最新順にソートする処理を追加
-                const sortedItems = data.items.sort((a, b) => {
-                    return new Date(b.pubDate) - new Date(a.pubDate);
-                });
+                // 日付でソート（最新順）
+                const sortedItems = data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
 
-                container.innerHTML = sortedItems.slice(0, 12).map(item => {
+                container.innerHTML = sortedItems.slice(0, 15).map(item => {
                     const pubDate = new Date(item.pubDate);
                     const dateStr = `${pubDate.getFullYear()}-${(pubDate.getMonth()+1).toString().padStart(2,'0')}-${pubDate.getDate().toString().padStart(2,'0')}`;
                     

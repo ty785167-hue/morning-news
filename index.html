@@ -61,7 +61,7 @@
             color: inherit; display: block; border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .news-card:hover { background: rgba(255, 255, 255, 0.2); }
-        .news-meta { font-size: 0.7rem; opacity: 0.7; margin-bottom: 4px; font-weight: bold; }
+        .news-meta { font-size: 0.7rem; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
 
         footer { text-align: center; font-size: 0.7rem; padding: 40px 0; opacity: 0.6; }
     </style>
@@ -99,9 +99,12 @@
 </div>
 
 <script>
+    // カテゴリーの定義（金融とビザを追加）
     const CATEGORIES = [
         { id: "main", label: "主要", url: "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja" },
-        { id: "economy", label: "世界経済", q: "世界経済 OR Bloomberg OR Reuters" },
+        { id: "finance", label: "金融", q: "金融 OR マーケット OR 投資 OR Bloomberg" },
+        { id: "economy", label: "世界経済", q: "世界経済 OR Reuters" },
+        { id: "visa", label: "ビザ", q: "ビザ OR 在留資格 OR 出入国管理 OR VISA" },
         { id: "japan", label: "日本国内", q: "日本国内 ニュース" },
         { id: "spain", label: "スペイン", q: "スペイン ニュース" },
         { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション" },
@@ -152,7 +155,6 @@
         const cat = CATEGORIES.find(c => c.id === id);
         const container = document.getElementById(`news-list-${id}`);
         
-        // GoogleニュースのURLを生成
         let rssUrl = cat.url;
         if (!rssUrl) {
             rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cat.q)}&hl=ja&gl=JP&ceid=JP:ja`;
@@ -164,12 +166,22 @@
             const data = await res.json();
             
             if (data.status === 'ok' && data.items.length > 0) {
-                container.innerHTML = data.items.slice(0, 10).map(item => `
-                    <a href="${item.link}" target="_blank" class="news-card">
-                        <div class="news-meta">${item.pubDate.split(' ')[0]} | ${item.author || 'News'}</div>
-                        <div class="news-title">${item.title}</div>
-                    </a>
-                `).join('');
+                // ★最新順にソートする処理を追加
+                const sortedItems = data.items.sort((a, b) => {
+                    return new Date(b.pubDate) - new Date(a.pubDate);
+                });
+
+                container.innerHTML = sortedItems.slice(0, 12).map(item => {
+                    const pubDate = new Date(item.pubDate);
+                    const dateStr = `${pubDate.getFullYear()}-${(pubDate.getMonth()+1).toString().padStart(2,'0')}-${pubDate.getDate().toString().padStart(2,'0')}`;
+                    
+                    return `
+                        <a href="${item.link}" target="_blank" class="news-card">
+                            <div class="news-meta">${dateStr} | ${item.author || 'News'}</div>
+                            <div class="news-title">${item.title}</div>
+                        </a>
+                    `;
+                }).join('');
             } else {
                 container.innerHTML = "<p style='text-align:center; padding:20px;'>現在、表示できるニュースがありません。</p>";
             }

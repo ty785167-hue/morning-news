@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Briefing Desk - Sanmei Master Edition</title>
+    <title>Ultimate Briefing Desk - Sanmei Accurate Edition</title>
     <style>
-        :root { --accent: #ffd700; --card-bg: rgba(255, 255, 255, 0.1); --border: rgba(254, 180, 123, 0.3); }
+        :root { --accent: #ffd700; --card-bg: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.2); }
         body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; margin: 0; padding: 10px; line-height: 1.5; min-height: 100vh; transition: background 3s ease; color: #fff; background: #050a14; }
         body.day { background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%); color: #003366; }
         body.twilight { background: linear-gradient(180deg, #fa709a 0%, #fee140 100%); color: #4a0000; }
@@ -19,7 +19,7 @@
         .astro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; margin-top: 10px; opacity: 0.9; }
 
         /* 位相法 占いエリア */
-        .fortune-area { background: rgba(0,0,0,0.5); padding: 25px; border-radius: 15px; margin: 20px 0; border: 1.5px solid var(--accent); color: #fff; box-shadow: 0 0 25px rgba(212, 175, 55, 0.2); }
+        .fortune-area { background: rgba(0,0,0,0.5); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1.5px solid var(--accent); color: #fff; box-shadow: 0 0 25px rgba(212, 175, 55, 0.2); }
         .fortune-title { font-size: 1rem; font-weight: bold; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; text-align: center; letter-spacing: 2px; }
         .fortune-item { margin-bottom: 18px; font-size: 0.95rem; }
         .fortune-label { font-weight: bold; color: var(--accent); display: block; font-size: 0.8rem; margin-bottom: 5px; border-left: 3px solid var(--accent); padding-left: 10px; }
@@ -54,12 +54,11 @@
         </div>
     </header>
 
-    <!-- 位相法リーディングエリア -->
     <div class="fortune-area">
         <div class="fortune-title">位相法リーディング (1979.11.30 男性)</div>
         
         <div class="fortune-item"><span class="fortune-label">1. 今日の干支</span><div id="f-today" class="fortune-text" style="font-weight:bold; font-size:1.1rem; color: var(--accent);"></div></div>
-        <div class="fortune-item"><span class="fortune-label">2. あなたの命式</span><div class="fortune-text">日:辛未 / 月:乙亥 / 年:己未</div></div>
+        <div class="fortune-item"><span class="fortune-label">2. あなたの命式</span><div class="fortune-text">日:辛丑 / 月:乙亥 / 年:己未</div></div>
         <div class="fortune-item"><span class="fortune-label">3. 成立している位相法</span><div id="f-relation" class="fortune-text"></div></div>
         <div class="fortune-item"><span class="fortune-label">4. 位相法の意味</span><div id="f-meaning" class="fortune-text"></div></div>
         <div class="fortune-item"><span class="fortune-label">5. 今日のテーマ</span><div id="f-theme" class="fortune-text"></div></div>
@@ -77,7 +76,7 @@
     <div id="news-content"></div>
 
     <footer>
-        命式: 己未・乙亥・辛未 (1979.11.30)<br>
+        命式: 己未・乙亥・辛丑 (1979.11.30修正済)<br>
         Sanmei Logic: 2000-01-01 (戊午) Anchor Point
     </footer>
 </div>
@@ -92,7 +91,7 @@
         { id: "main", label: "主要", url: "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja" },
         { id: "finance", label: "金融", q: "金融 OR マーケット OR 投資" },
         { id: "economy", label: "世界経済", q: "世界経済 OR Bloomberg OR Reuters" },
-        { id: "visa", label: "ビザ・移住", q: "デジタルノマドビザ OR 学生ビザ" },
+        { id: "visa", label: "ビザ・移住", q: "デジタルノマドビザ OR 移住" },
         { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション" },
         { id: "spain", label: "スペイン", q: "スペイン ニュース" },
         { id: "ai", label: "最新AI", q: "AI 最新" },
@@ -102,28 +101,23 @@
     ];
 
     let currentTab = "main";
-    // 1979/11/30 (辛未) 男性の宿命支: 未, 亥, 未
-    const natalShi = ["未", "亥", "未"];
+    // ★修正: 日支を「丑」に更新
+    const natalShi = ["丑", "亥", "未"];
 
-    // 1. 正確な日干支の計算 (2000/1/1 = 戊午[54] を起点)
     function getPillars(date) {
         const anchor = new Date(2000, 0, 1);
         const diffDays = Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(anchor.getFullYear(), anchor.getMonth(), anchor.getDate())) / (1000 * 60 * 60 * 24));
         const dayIdx = (diffDays + 54) % 60;
         const dayKanshi = KANSHI[dayIdx < 0 ? dayIdx + 60 : dayIdx];
 
-        // 簡易的な年・月干支判定 (2026/5/11用)
-        let yearKanshi = "丙午";
-        let monthKanshi = "癸巳"; // 5/11は立夏後のため
-        if (date.getFullYear() === 2026) {
-            if (date.getMonth() + 1 === 5) {
-                monthKanshi = (date.getDate() >= 5) ? "癸巳" : "甲辰";
-            }
+        let yearKanshi = "丙午"; // 2026年想定
+        let monthKanshi = "癸巳"; 
+        if (date.getFullYear() === 2026 && date.getMonth() + 1 === 5) {
+            monthKanshi = (date.getDate() >= 5) ? "癸巳" : "甲辰";
         }
         return { day: dayKanshi, month: monthKanshi, year: yearKanshi };
     }
 
-    // 2. 位相法判定
     function analyze(pillars) {
         const dShi = pillars.day[1];
         const mShi = pillars.month[1];
@@ -132,41 +126,39 @@
         let rels = [];
         let means = [];
 
-        // 判定表
         const chu = { "子":"午","午":"子","丑":"未","未":"丑","寅":"申","申":"寅","卯":"酉","酉":"卯","辰":"戌","戌":"辰","巳":"亥","亥":"巳" };
         const shigo = { "子":"丑","丑":"子","寅":"亥","亥":"寅","卯":"戌","戌":"卯","辰":"酉","酉":"辰","巳":"申","申":"巳","午":"未","未":"午" };
         const sankai = [["亥","卯","未"],["寅","午","戌"],["巳","酉","丑"],["申","子","辰"]];
 
-        // 日支(未)との関係
-        if (chu[dShi] === "未") { rels.push("日支と対冲"); means.push("日々の生活や足元に変化の風が吹きます。古い習慣を手放すタイミング。"); }
-        if (shigo[dShi] === "未") { rels.push("日支と支合"); means.push("プライベートや足元が安定し、物事が着実にまとまります。"); }
+        // 日支「丑」との判定
+        if (chu[dShi] === "丑") { rels.push("日支と対冲"); means.push("足元の環境や家庭、自分自身の中で変化や葛藤が生じやすい時。古いものを手放して。"); }
+        if (shigo[dShi] === "丑") { rels.push("日支と支合"); means.push("身近な協力者が現れたり、物事が着実にまとまる安定感のある動き。"); }
         
-        // 月支(亥)との関係 (2026/5/11 癸巳月との関係)
+        // 月支「亥」との判定
         if (chu[mShi] === "亥") { rels.push("月支と対冲"); means.push("仕事や社会的な立場において、現状を打破するような揺さぶりが生じやすい時。"); }
-        if (shigo[mShi] === "亥") { rels.push("月支と支合"); means.push("社会的な活動がスムーズに運び、周囲との協力体制が整います。"); }
+        if (shigo[mShi] === "亥") { rels.push("月支と支合"); means.push("社会的な活動がスムーズに運び、周囲との強力な協力体制が整います。"); }
 
-        // 三合会局・半会 (亥・未が含まれる場合)
+        // 三合・半会 (丑が含まれるグループ: 巳・酉・丑)
         sankai.forEach(group => {
-            if (group.includes("未") && group.includes(dShi)) { rels.push("日支と半会"); means.push("足元から可能性が大きく広がり、新しいステージへ進む活力が生まれます。"); }
-            if (group.includes("亥") && group.includes(mShi)) { rels.push("月支と半会"); means.push("仕事面で理想が広がり、ダイナミックな展開が期待できます。"); }
+            if (group.includes("丑") && group.includes(dShi)) { rels.push("日支と半会"); means.push("プライベートな領域から可能性が広がり、新しい展開が期待できる時。"); }
+            if (group.includes("亥") && group.includes(mShi)) { rels.push("月支と半会"); means.push("仕事面で理想が膨らみ、ダイナミックなチャンスが訪れる兆し。"); }
         });
 
         if (rels.length === 0) {
             rels.push("大きな波乱なし");
-            means.push("宿命と時の運気が穏やかに調和しています。自分自身のペースを大切に。");
+            means.push("宿命と時の運気が穏やかに調和しています。自分自身の内側を整える、しなやかな一日を。");
         }
 
-        // リーディング出力
         document.getElementById('f-today').innerText = pillars.day;
         document.getElementById('f-relation').innerText = [...new Set(rels)].join(' / ');
         document.getElementById('f-meaning').innerText = [...new Set(means)].join(' ');
-        document.getElementById('f-theme').innerText = rels.join().includes("対冲") ? "「破壊と創造」意識の転換" : "「誠実な積み重ね」と「内面の整理」";
-        document.getElementById('f-good').innerText = "丁寧な言葉選び、身の回りの整理整頓、直感に従った小さなアクション。";
-        document.getElementById('f-warn').innerText = "焦りは禁物。多忙な時ほど、一度深呼吸をしてから判断を下して。";
-        document.getElementById('f-summary').innerText = "「流れる雲のようにしなやかに、されど芯は強く。今日という日を楽しんで」";
+        document.getElementById('f-theme').innerText = rels.join().includes("対冲") ? "「意識のリセット」と「身軽さへの転換」" : "「誠実な歩み」と「足元の再確認」";
+        document.getElementById('f-good').innerText = "深呼吸、情報の整理、身近な大切な人への感謝を言葉にすること。";
+        document.getElementById('f-warn').innerText = "焦りは禁物。特に足元に違和感がある時は、一度立ち止まって確認を。";
+        document.getElementById('f-summary').innerText = "「流れる風の中に立ちながら、自分の中心を静かに見つめる、豊かな一日を」";
     }
 
-    // --- 既存UIロジック ---
+    // --- 以下、既存のニュース・天候ロジック ---
     function createTabs() {
         const nav = document.getElementById('tab-list');
         const content = document.getElementById('news-content');
@@ -219,19 +211,16 @@
             const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=Asia%2FTokyo");
             const d = await res.json();
             const now = new Date();
-            
             document.getElementById('temp').innerText = Math.round(d.current.temperature_2m);
             document.getElementById('sunrise-time').innerText = new Date(d.daily.sunrise[0]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             document.getElementById('sunset-time').innerText = new Date(d.daily.sunset[0]).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
             document.getElementById('display-date').innerText = (now.getMonth()+1) + "月" + now.getDate() + "日";
-
             const code = d.current.weather_code;
             let icon = "☀️"; let txt = "快晴";
             if (code > 1) { icon = "☁️"; txt = "曇り"; }
             if (code > 50) { icon = "🌧️"; txt = "雨"; }
             document.getElementById('weather-icon').innerText = icon;
             document.getElementById('weather-text').innerText = txt;
-
             const celestial = document.getElementById('celestial-body');
             const progress = (now - new Date(d.daily.sunrise[0])) / (new Date(d.daily.sunset[0]) - new Date(d.daily.sunrise[0]));
             if (progress > 0 && progress < 1) {
@@ -240,7 +229,6 @@
             } else {
                 celestial.innerText = "🌙"; celestial.style.top = "30px"; document.body.className = "night";
             }
-
             const pillars = getPillars(now);
             analyze(pillars);
             await fetchNewsForCategory(currentTab);

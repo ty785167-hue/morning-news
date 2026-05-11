@@ -4,65 +4,37 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Briefing Desk</title>
+    <title>Ultimate Briefing Desk - Sanmei Edition</title>
     <style>
-        :root { 
-            --accent: #ffd700;
-            --card-bg: rgba(255, 255, 255, 0.1);
-        }
-        
-        body { 
-            font-family: "Helvetica Neue", Arial, sans-serif; 
-            margin: 0; padding: 10px; line-height: 1.5;
-            min-height: 100vh; transition: background 3s ease; color: #fff;
-            background: #050a14;
-        }
-
-        /* 空の状態 */
+        :root { --accent: #ffd700; --card-bg: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.2); }
+        body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; margin: 0; padding: 10px; line-height: 1.5; min-height: 100vh; transition: background 3s ease; color: #fff; background: #050a14; }
         body.day { background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%); color: #003366; }
         body.twilight { background: linear-gradient(180deg, #fa709a 0%, #fee140 100%); color: #4a0000; }
         body.night { background: linear-gradient(180deg, #050a14 0%, #1a2a44 100%); color: #ffffff; }
-
         .container { max-width: 800px; margin: 0 auto; }
-        
         header { position: relative; padding: 50px 0 20px; text-align: center; }
         #celestial-body { position: absolute; left: 50%; transform: translateX(-50%); font-size: 60px; transition: all 3s ease; z-index: 0; }
-
-        .info-panel { 
-            position: relative; z-index: 1; background: rgba(255, 255, 255, 0.2); 
-            backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; 
-            border: 1px solid rgba(255, 255, 255, 0.3); box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-        }
-
+        .info-panel { position: relative; z-index: 1; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(0,0,0,0.1); }
         .temp-main { font-size: 2.5rem; font-weight: bold; margin: 0; }
         .astro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; margin-top: 10px; opacity: 0.9; }
 
-        .fortune-area { background: rgba(0,0,0,0.15); padding: 15px; border-radius: 15px; margin: 15px 0; border-left: 5px solid var(--accent); }
+        /* 位相法 占いエリア */
+        .fortune-area { background: rgba(0,0,0,0.3); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid var(--accent); color: #fff; }
+        .fortune-title { font-size: 0.9rem; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 5px; margin-bottom: 15px; text-align: center; }
+        .fortune-item { margin-bottom: 12px; font-size: 0.9rem; }
+        .fortune-label { font-weight: bold; color: var(--accent); display: block; font-size: 0.75rem; margin-bottom: 2px; }
+        .fortune-text { line-height: 1.6; }
+        .summary-box { background: rgba(255, 215, 0, 0.15); padding: 10px; border-radius: 8px; border: 1px dashed var(--accent); text-align: center; font-weight: bold; margin-top: 15px; }
 
-        /* カテゴリータブ */
-        .category-nav { 
-            display: flex; overflow-x: auto; gap: 8px; padding: 15px 0;
-            scrollbar-width: none; -ms-overflow-style: none;
-        }
+        .category-nav { display: flex; overflow-x: auto; gap: 8px; padding: 15px 0; scrollbar-width: none; }
         .category-nav::-webkit-scrollbar { display: none; }
-        .tab { 
-            flex: 0 0 auto; padding: 10px 20px; border-radius: 25px; 
-            background: rgba(0,0,0,0.2); border: 1px solid rgba(255,255,255,0.3);
-            color: inherit; cursor: pointer; font-size: 0.85rem; font-weight: bold;
-        }
+        .tab { flex: 0 0 auto; padding: 10px 20px; border-radius: 25px; background: rgba(0,0,0,0.2); border: 1px solid var(--border); color: inherit; cursor: pointer; font-size: 0.85rem; font-weight: bold; }
         .tab.active { background: #fff; color: #000; border-color: #fff; }
-
-        /* ニュース表示エリア */
-        .news-container { display: none; min-height: 200px; }
+        .news-container { display: none; }
         .news-container.active { display: block; }
-        .news-card {
-            background: rgba(255, 255, 255, 0.1); border-radius: 12px;
-            padding: 15px; margin-bottom: 10px; text-decoration: none;
-            color: inherit; display: block; border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+        .news-card { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 15px; margin-bottom: 10px; text-decoration: none; color: inherit; display: block; border: 1px solid var(--border); }
         .news-card:hover { background: rgba(255, 255, 255, 0.2); }
         .news-meta { font-size: 0.7rem; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
-
         footer { text-align: center; font-size: 0.7rem; padding: 40px 0; opacity: 0.6; }
     </style>
 </head>
@@ -74,7 +46,7 @@
         <div class="info-panel">
             <div id="display-date" style="font-size: 1.1rem; font-weight: bold;">--月--日</div>
             <div class="temp-main"><span id="temp">--</span>°C <span id="weather-icon">--</span></div>
-            <div id="weather-text" style="font-size: 0.9rem;">Loading Sky...</div>
+            <div id="weather-text" style="font-size: 0.9rem;">Sky Loading...</div>
             <div class="astro-grid">
                 <div>🌅 Sunrise: <span id="sunrise-time">--:--</span></div>
                 <div>🌇 Sunset: <span id="sunset-time">--:--</span></div>
@@ -82,9 +54,22 @@
         </div>
     </header>
 
+    <!-- 位相法リーディングエリア -->
     <div class="fortune-area">
-        <div style="font-size: 0.8rem; font-weight: bold; color: var(--accent);">🏹 射手座 (11/30) 運勢</div>
-        <div id="fortune-text">運勢を取得中...</div>
+        <div class="fortune-title">位相法リーディング (1979.11.30 男性)</div>
+        
+        <div class="fortune-item"><span class="fortune-label">1. 今日の干支</span><div id="f-today" class="fortune-text"></div></div>
+        <div class="fortune-item"><span class="fortune-label">2. あなたの命式</span><div class="fortune-text">日:辛未 / 月:乙亥 / 年:己未</div></div>
+        <div class="fortune-item"><span class="fortune-label">3. 成立している位相法</span><div id="f-relation" class="fortune-text"></div></div>
+        <div class="fortune-item"><span class="fortune-label">4. 位相法の意味</span><div id="f-meaning" class="fortune-text"></div></div>
+        <div class="fortune-item"><span class="fortune-label">5. 今日のテーマ</span><div id="f-theme" class="fortune-text"></div></div>
+        <div class="fortune-item"><span class="fortune-label">6. 今日やると良いこと</span><div id="f-good" class="fortune-text"></div></div>
+        <div class="fortune-item"><span class="fortune-label">7. 注意点</span><div id="f-warn" class="fortune-text"></div></div>
+        
+        <div class="summary-box">
+            <span class="fortune-label">8. ひと言まとめ</span>
+            <div id="f-summary"></div>
+        </div>
     </div>
 
     <div style="text-align:center;"><button onclick="refreshAll()" id="update-btn" style="background:none; border:1px solid currentColor; color:inherit; padding:8px 25px; border-radius:20px; cursor:pointer; font-size:0.9rem; font-weight:bold;">更新する</button></div>
@@ -93,111 +78,136 @@
     <div id="news-content"></div>
 
     <footer>
-        1979.11.30 / Sagittarius / Tokyo Office<br>
-        Powered by Open-Meteo & Google News RSS
+        命式: 己未・乙亥・辛未 (1979.11.30)<br>
+        Powered by Open-Meteo & Sanmei-Logic
     </footer>
 </div>
 
 <script>
+    const KAN = ["甲","乙","丙","丁","戊","己","庚","辛","壬","癸"];
+    const SHI = ["子","丑","寅","卯","辰","巳","午","未","申","酉","戌","亥"];
+    const KANSHI = [];
+    for(let i=0; i<60; i++) KANSHI.push(KAN[i%10] + SHI[i%12]);
+
     const CATEGORIES = [
         { id: "main", label: "主要", url: "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja" },
-        { id: "finance", label: "金融", q: "金融 OR マーケット OR 投資 OR 資産運用" },
+        { id: "finance", label: "金融", q: "金融 OR マーケット OR 投資" },
         { id: "economy", label: "世界経済", q: "世界経済 OR Bloomberg OR Reuters" },
-        { id: "visa", label: "ビザ・移住", q: "デジタルノマドビザ OR 学生ビザ OR 永住権 OR 移住手続き" },
-        { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション OR 海外リモートワーク" },
-        { id: "spain", label: "スペイン", q: "スペイン ニュース OR スペイン 移住" },
-        { id: "japan", label: "日本国内", q: "日本国内 ニュース" },
-        { id: "ai", label: "最新AI", q: "AI 最新 OR 人工知能 OR ChatGPT OR LLM" },
+        { id: "visa", label: "ビザ・移住", q: "デジタルノマドビザ OR 学生ビザ OR 移住" },
+        { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション" },
+        { id: "spain", label: "スペイン", q: "スペイン ニュース" },
+        { id: "ai", label: "最新AI", q: "AI 最新 OR 人工知能" },
         { id: "nutrition", label: "精密栄養学", q: "精密栄養学 OR パーソナライズ栄養" },
-        { id: "music", label: "機能性音楽", q: "機能性音楽 OR 音楽療法 研究" },
+        { id: "music", label: "機能性音楽", q: "機能性音楽" },
         { id: "health", label: "健康知識", q: "健康 最新 研究" }
     ];
 
     let currentTab = "main";
 
+    // 1979/11/30 (辛未) 男性の宿命支: 未, 亥, 未
+    const userChart = { kan: "辛", shi: ["未", "亥", "未"], kanshi: ["辛未", "乙亥", "己未"] };
+
+    function getDailyKanshi(date) {
+        // 2024-01-01は「甲子」から数えて40番目の「癸卯」
+        const base = new Date(2024, 0, 1);
+        const diff = Math.floor((date - base) / (1000*60*60*24));
+        const idx = (diff + 39) % 60;
+        return KANSHI[idx < 0 ? idx + 60 : idx];
+    }
+
+    function analyzeIsoho(dailyKanshi) {
+        const dKan = dailyKanshi[0];
+        const dShi = dailyKanshi[1];
+        let relations = [];
+        let meanings = [];
+        
+        // 簡易判定ロジック
+        userChart.shi.forEach((uShi, i) => {
+            const pos = ["日", "月", "年"][i];
+            // 支合
+            const shigo = { "子":"丑","丑":"子","寅":"亥","亥":"寅","卯":"戌","戌":"卯","辰":"酉","酉":"辰","巳":"申","申":"巳","午":"未","未":"午" };
+            if(shigo[uShi] === dShi) { relations.push(`${pos}支と支合`); meanings.push(`${pos}において物事がスムーズにまとまる兆し。`); }
+            // 冲
+            const chu = { "子":"午","午":"子","丑":"未","未":"丑","寅":"申","申":"寅","卯":"酉","酉":"卯","辰":"戌","戌":"辰","巳":"亥","亥":"巳" };
+            if(chu[uShi] === dShi) { relations.push(`${pos}支と対冲`); meanings.push(`${pos}の環境で破壊や散じる動き。リセットの時。`); }
+            // 半会 (三合の簡易版)
+            const sankai = [["亥","卯","未"],["寅","午","戌"],["巳","酉","丑"],["申","子","辰"]];
+            sankai.forEach(group => {
+                if(group.includes(uShi) && group.includes(dShi)) {
+                    relations.push(`${pos}支と半会`); meanings.push(`${pos}の気が膨らみ、物事が急速に広がる拡大の好機。`);
+                }
+            });
+        });
+
+        if(relations.length === 0) {
+            relations.push("大きな波乱なし");
+            meanings.push("平穏な一日。足元を固めるのに適した時期です。");
+        }
+
+        // 表示
+        document.getElementById('f-today').innerText = dailyKanshi;
+        document.getElementById('f-relation').innerText = [...new Set(relations)].join(' / ');
+        document.getElementById('f-meaning').innerText = [...new Set(meanings)].join(' ');
+        document.getElementById('f-theme').innerText = relations.includes("対冲") ? "手放しと再構築" : "内面の充実と整理";
+        document.getElementById('f-good').innerText = "深呼吸、情報の整理、身近な人への感謝を言葉にすること。";
+        document.getElementById('f-warn').innerText = "焦りは禁物。直感よりも、丁寧な確認を優先して。";
+        document.getElementById('f-summary').innerText = "風の流れを感じながら、しなやかに進む一日。";
+    }
+
+    // --- 以下ニュース等の既存ロジック ---
     function createTabs() {
         const nav = document.getElementById('tab-list');
         const content = document.getElementById('news-content');
-        nav.innerHTML = "";
-        content.innerHTML = "";
-
+        nav.innerHTML = ""; content.innerHTML = "";
         CATEGORIES.forEach(cat => {
             const btn = document.createElement('button');
             btn.className = `tab ${cat.id === currentTab ? 'active' : ''}`;
             btn.innerText = cat.label;
             btn.onclick = () => switchTab(cat.id);
             nav.appendChild(btn);
-
             const div = document.createElement('div');
             div.id = `news-list-${cat.id}`;
             div.className = `news-container ${cat.id === currentTab ? 'active' : ''}`;
-            div.innerHTML = "<p style='text-align:center; padding:20px; opacity:0.6;'>ニュースを読み込み中...</p>";
+            div.innerHTML = "<p style='text-align:center; padding:20px; opacity:0.6;'>Loading...</p>";
             content.appendChild(div);
         });
     }
 
     async function switchTab(id) {
         currentTab = id;
-        document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-        document.querySelectorAll('.news-container').forEach(c => c.classList.remove('active'));
-        
-        const activeTabBtn = Array.from(document.querySelectorAll('.tab')).find(t => t.innerText === CATEGORIES.find(c => c.id === id).label);
-        if(activeTabBtn) activeTabBtn.classList.add('active');
-        
-        const activeContent = document.getElementById(`news-list-${id}`);
-        if(activeContent) activeContent.classList.add('active');
-        
+        document.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.innerText === CATEGORIES.find(c => c.id === id).label));
+        document.querySelectorAll('.news-container').forEach(c => c.classList.toggle('active', c.id === `news-list-${id}`));
         await fetchNewsForCategory(id);
     }
 
     async function fetchNewsForCategory(id) {
         const cat = CATEGORIES.find(c => c.id === id);
         const container = document.getElementById(`news-list-${id}`);
-        
-        let rssUrl = cat.url;
-        if (!rssUrl) {
-            rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(cat.q)}&hl=ja&gl=JP&ceid=JP:ja`;
-        }
-
+        const rssUrl = cat.url || `https://news.google.com/rss/search?q=${encodeURIComponent(cat.q)}&hl=ja&gl=JP&ceid=JP:ja`;
         try {
-            const apiUrl = `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`;
-            const res = await fetch(apiUrl);
+            const res = await fetch(`https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`);
             const data = await res.json();
-            
-            if (data.status === 'ok' && data.items.length > 0) {
-                // 日付でソート（最新順）
-                const sortedItems = data.items.sort((a, b) => new Date(b.pubDate) - new Date(a.pubDate));
-
-                container.innerHTML = sortedItems.slice(0, 15).map(item => {
-                    const pubDate = new Date(item.pubDate);
-                    const dateStr = `${pubDate.getFullYear()}-${(pubDate.getMonth()+1).toString().padStart(2,'0')}-${pubDate.getDate().toString().padStart(2,'0')}`;
-                    
-                    return `
-                        <a href="${item.link}" target="_blank" class="news-card">
-                            <div class="news-meta">${dateStr} | ${item.author || 'News'}</div>
-                            <div class="news-title">${item.title}</div>
-                        </a>
-                    `;
+            if (data.status === 'ok') {
+                const sorted = data.items.sort((a,b) => new Date(b.pubDate) - new Date(a.pubDate));
+                container.innerHTML = sorted.slice(0, 12).map(item => {
+                    const d = new Date(item.pubDate);
+                    return `<a href="${item.link}" target="_blank" class="news-card">
+                        <div class="news-meta">${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}</div>
+                        <div class="news-title">${item.title}</div>
+                    </a>`;
                 }).join('');
-            } else {
-                container.innerHTML = "<p style='text-align:center; padding:20px;'>現在、表示できるニュースがありません。</p>";
             }
-        } catch (e) {
-            container.innerHTML = "<p style='text-align:center; padding:20px;'>取得に失敗しました。時間をおいて「更新」を押してください。</p>";
-        }
+        } catch (e) { container.innerHTML = "<p>取得失敗。更新してください。</p>"; }
     }
 
     async function refreshAll() {
         const updateBtn = document.getElementById('update-btn');
         updateBtn.innerText = "更新中...";
-
         try {
             const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.6895&longitude=139.6917&current=temperature_2m,weather_code&daily=sunrise,sunset&timezone=Asia%2FTokyo");
             const d = await res.json();
-            
             const now = new Date();
-            const sunrise = new Date(d.daily.sunrise[0]);
-            const sunset = new Date(d.daily.sunset[0]);
+            const sunrise = new Date(d.daily.sunrise[0]), sunset = new Date(d.daily.sunset[0]);
             
             document.getElementById('temp').innerText = Math.round(d.current.temperature_2m);
             document.getElementById('sunrise-time').innerText = sunrise.getHours() + ":" + sunrise.getMinutes().toString().padStart(2, '0');
@@ -214,23 +224,17 @@
             const celestial = document.getElementById('celestial-body');
             if (now > sunrise && now < sunset) {
                 const progress = (now - sunrise) / (sunset - sunrise);
-                celestial.innerText = "☀️";
-                celestial.style.top = (20 + (1 - Math.sin(Math.PI * progress)) * 50) + "px";
+                celestial.innerText = "☀️"; celestial.style.top = (20 + (1 - Math.sin(Math.PI * progress)) * 50) + "px";
                 document.body.className = (progress < 0.1 || progress > 0.9) ? "twilight" : "day";
             } else {
-                celestial.innerText = "🌙";
-                celestial.style.top = "30px";
-                document.body.className = "night";
+                celestial.innerText = "🌙"; celestial.style.top = "30px"; document.body.className = "night";
             }
 
-            const cycle = (now.getDate()) % 5;
-            const fts = ["【最高】冒険心が道を切り拓く日。","【知性】学びが深い。ニュースから着想を。","【交流】人との会話に幸運のヒントが。","【慎重】一歩引いて全体を眺めると吉。","【休息】自分を労り、感性を満たして。"];
-            document.getElementById('fortune-text').innerText = fts[cycle];
-
+            // 位相法解析
+            analyzeIsoho(getDailyKanshi(now));
+            // ニュース
             await fetchNewsForCategory(currentTab);
-        } catch (err) {
-            console.log(err);
-        }
+        } catch (err) { console.log(err); }
         updateBtn.innerText = "更新する";
     }
 

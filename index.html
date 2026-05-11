@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="google" content="notranslate">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultimate Briefing Desk - Sanmei Accurate</title>
+    <title>Ultimate Briefing Desk - Sanmei Master Edition</title>
     <style>
-        :root { --accent: #ffd700; --card-bg: rgba(255, 255, 255, 0.1); --border: rgba(255, 255, 255, 0.2); }
+        :root { --accent: #ffd700; --card-bg: rgba(255, 255, 255, 0.1); --border: rgba(254, 180, 123, 0.3); }
         body { font-family: "Helvetica Neue", Arial, "Hiragino Kaku Gothic ProN", sans-serif; margin: 0; padding: 10px; line-height: 1.5; min-height: 100vh; transition: background 3s ease; color: #fff; background: #050a14; }
         body.day { background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%); color: #003366; }
         body.twilight { background: linear-gradient(180deg, #fa709a 0%, #fee140 100%); color: #4a0000; }
@@ -19,12 +19,12 @@
         .astro-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.8rem; margin-top: 10px; opacity: 0.9; }
 
         /* 位相法 占いエリア */
-        .fortune-area { background: rgba(0,0,0,0.4); padding: 20px; border-radius: 15px; margin: 20px 0; border: 1px solid var(--accent); color: #fff; box-shadow: 0 0 20px rgba(212, 175, 55, 0.2); }
-        .fortune-title { font-size: 0.9rem; font-weight: bold; color: var(--accent); border-bottom: 1px solid var(--accent); padding-bottom: 8px; margin-bottom: 15px; text-align: center; letter-spacing: 2px; }
-        .fortune-item { margin-bottom: 14px; font-size: 0.9rem; }
-        .fortune-label { font-weight: bold; color: var(--accent); display: block; font-size: 0.75rem; margin-bottom: 3px; opacity: 0.9; }
-        .fortune-text { line-height: 1.7; }
-        .summary-box { background: rgba(255, 215, 0, 0.1); padding: 12px; border-radius: 8px; border: 1px dashed var(--accent); text-align: center; font-weight: bold; margin-top: 15px; }
+        .fortune-area { background: rgba(0,0,0,0.5); padding: 25px; border-radius: 15px; margin: 20px 0; border: 1.5px solid var(--accent); color: #fff; box-shadow: 0 0 25px rgba(212, 175, 55, 0.2); }
+        .fortune-title { font-size: 1rem; font-weight: bold; color: var(--accent); border-bottom: 2px solid var(--accent); padding-bottom: 10px; margin-bottom: 20px; text-align: center; letter-spacing: 2px; }
+        .fortune-item { margin-bottom: 18px; font-size: 0.95rem; }
+        .fortune-label { font-weight: bold; color: var(--accent); display: block; font-size: 0.8rem; margin-bottom: 5px; border-left: 3px solid var(--accent); padding-left: 10px; }
+        .fortune-text { line-height: 1.8; padding-left: 13px; }
+        .summary-box { background: rgba(255, 215, 0, 0.1); padding: 15px; border-radius: 10px; border: 1px dashed var(--accent); text-align: center; font-weight: bold; margin-top: 20px; font-size: 1.1rem; }
 
         .category-nav { display: flex; overflow-x: auto; gap: 8px; padding: 15px 0; scrollbar-width: none; }
         .category-nav::-webkit-scrollbar { display: none; }
@@ -33,7 +33,7 @@
         .news-container { display: none; }
         .news-container.active { display: block; }
         .news-card { background: rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 15px; margin-bottom: 10px; text-decoration: none; color: inherit; display: block; border: 1px solid var(--border); }
-        .news-card:hover { background: rgba(255, 255, 255, 0.2); }
+        .news-card:hover { background: rgba(255, 255, 255, 0.2); border-color: var(--accent); }
         .news-meta { font-size: 0.7rem; color: var(--accent); margin-bottom: 4px; font-weight: bold; }
         footer { text-align: center; font-size: 0.7rem; padding: 40px 0; opacity: 0.6; }
     </style>
@@ -44,9 +44,9 @@
     <header>
         <div id="celestial-body">☀️</div>
         <div class="info-panel">
-            <div id="display-date" style="font-size: 1.1rem; font-weight: bold;">--月--日</div>
+            <div id="display-date" style="font-size: 1.2rem; font-weight: bold;">--月--日</div>
             <div class="temp-main"><span id="temp">--</span>°C <span id="weather-icon">--</span></div>
-            <div id="weather-text" style="font-size: 0.9rem;">天候を読み込み中...</div>
+            <div id="weather-text" style="font-size: 0.95rem;">天候を取得中...</div>
             <div class="astro-grid">
                 <div>🌅 Sunrise: <span id="sunrise-time">--:--</span></div>
                 <div>🌇 Sunset: <span id="sunset-time">--:--</span></div>
@@ -54,11 +54,12 @@
         </div>
     </header>
 
+    <!-- 位相法リーディングエリア -->
     <div class="fortune-area">
         <div class="fortune-title">位相法リーディング (1979.11.30 男性)</div>
         
-        <div class="fortune-item"><span class="fortune-label">1. 今日の干支</span><div id="f-today" class="fortune-text" style="font-weight:bold; font-size:1.1rem;"></div></div>
-        <div class="fortune-item"><span class="fortune-label">2. 命式側の干支</span><div class="fortune-text">日:辛未 / 月:乙亥 / 年:己未</div></div>
+        <div class="fortune-item"><span class="fortune-label">1. 今日の干支</span><div id="f-today" class="fortune-text" style="font-weight:bold; font-size:1.1rem; color: var(--accent);"></div></div>
+        <div class="fortune-item"><span class="fortune-label">2. あなたの命式</span><div class="fortune-text">日:辛未 / 月:乙亥 / 年:己未</div></div>
         <div class="fortune-item"><span class="fortune-label">3. 成立している位相法</span><div id="f-relation" class="fortune-text"></div></div>
         <div class="fortune-item"><span class="fortune-label">4. 位相法の意味</span><div id="f-meaning" class="fortune-text"></div></div>
         <div class="fortune-item"><span class="fortune-label">5. 今日のテーマ</span><div id="f-theme" class="fortune-text"></div></div>
@@ -66,19 +67,18 @@
         <div class="fortune-item"><span class="fortune-label">7. 注意点</span><div id="f-warn" class="fortune-text"></div></div>
         
         <div class="summary-box">
-            <span class="fortune-label">8. ひと言まとめ</span>
             <div id="f-summary"></div>
         </div>
     </div>
 
-    <div style="text-align:center;"><button onclick="refreshAll()" id="update-btn" style="background:none; border:1px solid currentColor; color:inherit; padding:8px 25px; border-radius:20px; cursor:pointer; font-size:0.9rem; font-weight:bold;">情報を更新</button></div>
+    <div style="text-align:center;"><button onclick="refreshAll()" id="update-btn" style="background:none; border:1px solid currentColor; color:inherit; padding:10px 30px; border-radius:30px; cursor:pointer; font-size:1rem; font-weight:bold;">情報を更新する</button></div>
 
     <div class="category-nav" id="tab-list"></div>
     <div id="news-content"></div>
 
     <footer>
         命式: 己未・乙亥・辛未 (1979.11.30)<br>
-        2000-01-01 (戊午) Anchor Calculation
+        Sanmei Logic: 2000-01-01 (戊午) Anchor Point
     </footer>
 </div>
 
@@ -92,7 +92,7 @@
         { id: "main", label: "主要", url: "https://news.google.com/rss?hl=ja&gl=JP&ceid=JP:ja" },
         { id: "finance", label: "金融", q: "金融 OR マーケット OR 投資" },
         { id: "economy", label: "世界経済", q: "世界経済 OR Bloomberg OR Reuters" },
-        { id: "visa", label: "ビザ・移住", q: "デジタルノマドビザ OR 移住" },
+        { id: "visa", label: "ビザ・移住", q: "デジタルノマドビザ OR 学生ビザ" },
         { id: "nomad", label: "ノマド", q: "デジタルノマド OR ワーケーション" },
         { id: "spain", label: "スペイン", q: "スペイン ニュース" },
         { id: "ai", label: "最新AI", q: "AI 最新" },
@@ -102,67 +102,68 @@
     ];
 
     let currentTab = "main";
-    const userChart = { shi: ["未", "亥", "未"] };
+    // 1979/11/30 (辛未) 男性の宿命支: 未, 亥, 未
+    const natalShi = ["未", "亥", "未"];
 
-    // --- 正確な干支計算ロジック ---
-    function getDailyKanshi(date) {
-        // 2000年1月1日は「戊午」(54番)
+    // 1. 正確な日干支の計算 (2000/1/1 = 戊午[54] を起点)
+    function getPillars(date) {
         const anchor = new Date(2000, 0, 1);
-        const d1 = Date.UTC(anchor.getFullYear(), anchor.getMonth(), anchor.getDate());
-        const d2 = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-        const diffDays = Math.floor((d2 - d1) / (1000 * 60 * 60 * 24));
-        const idx = (diffDays + 54) % 60;
-        return KANSHI[idx < 0 ? idx + 60 : idx];
+        const diffDays = Math.floor((Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(anchor.getFullYear(), anchor.getMonth(), anchor.getDate())) / (1000 * 60 * 60 * 24));
+        const dayIdx = (diffDays + 54) % 60;
+        const dayKanshi = KANSHI[dayIdx < 0 ? dayIdx + 60 : dayIdx];
+
+        // 簡易的な年・月干支判定 (2026/5/11用)
+        let yearKanshi = "丙午";
+        let monthKanshi = "癸巳"; // 5/11は立夏後のため
+        if (date.getFullYear() === 2026) {
+            if (date.getMonth() + 1 === 5) {
+                monthKanshi = (date.getDate() >= 5) ? "癸巳" : "甲辰";
+            }
+        }
+        return { day: dayKanshi, month: monthKanshi, year: yearKanshi };
     }
 
-    function analyzeIsoho(dailyKanshi) {
-        const dShi = dailyKanshi[1];
-        let relations = [];
-        let meanings = [];
+    // 2. 位相法判定
+    function analyze(pillars) {
+        const dShi = pillars.day[1];
+        const mShi = pillars.month[1];
+        const yShi = pillars.year[1];
         
-        userChart.shi.forEach((uShi, i) => {
-            const pos = ["日", "月", "年"][i];
-            
-            // 支合
-            const shigo = { "子":"丑","丑":"子","寅":"亥","亥":"寅","卯":"戌","戌":"卯","辰":"酉","酉":"辰","巳":"申","申":"巳","午":"未","未":"午" };
-            if(shigo[uShi] === dShi) { 
-                relations.push(`${pos}支と支合`); 
-                meanings.push(`${pos}環境で協力者が現れたり、物事が着実にまとまる動きがあります。`); 
-            }
-            // 冲
-            const chu = { "子":"午","午":"子","丑":"未","未":"丑","寅":"申","申":"寅","卯":"酉","酉":"卯","辰":"戌","戌":"辰","巳":"亥","亥":"巳" };
-            if(chu[uShi] === dShi) { 
-                relations.push(`${pos}支と対冲`); 
-                meanings.push(`${pos}の場所で予期せぬ変化やリセットが起きやすく、古いものを手放す好機です。`); 
-            }
-            // 半会 (亥・卯・未 など)
-            const groups = [["亥","卯","未"],["寅","午","戌"],["巳","酉","丑"],["申","子","辰"]];
-            groups.forEach(g => {
-                if(g.includes(uShi) && g.includes(dShi)) {
-                    relations.push(`${pos}支と半会`);
-                    meanings.push(`${pos}を中心に活動が広がり、思考や行動がダイナミックに展開します。`);
-                }
-            });
-            // 害
-            const gai = { "子":"未","未":"子","丑":"午","午":"丑","寅":"巳","巳":"寅","卯":"辰","辰":"卯","申":"亥","亥":"申","酉":"戌","戌":"酉" };
-            if(gai[uShi] === dShi) {
-                relations.push(`${pos}支と害`);
-                meanings.push(`${pos}において心身の不一致や、ちぐはぐな感覚を覚えやすい日です。`);
-            }
+        let rels = [];
+        let means = [];
+
+        // 判定表
+        const chu = { "子":"午","午":"子","丑":"未","未":"丑","寅":"申","申":"寅","卯":"酉","酉":"卯","辰":"戌","戌":"辰","巳":"亥","亥":"巳" };
+        const shigo = { "子":"丑","丑":"子","寅":"亥","亥":"寅","卯":"戌","戌":"卯","辰":"酉","酉":"辰","巳":"申","申":"巳","午":"未","未":"午" };
+        const sankai = [["亥","卯","未"],["寅","午","戌"],["巳","酉","丑"],["申","子","辰"]];
+
+        // 日支(未)との関係
+        if (chu[dShi] === "未") { rels.push("日支と対冲"); means.push("日々の生活や足元に変化の風が吹きます。古い習慣を手放すタイミング。"); }
+        if (shigo[dShi] === "未") { rels.push("日支と支合"); means.push("プライベートや足元が安定し、物事が着実にまとまります。"); }
+        
+        // 月支(亥)との関係 (2026/5/11 癸巳月との関係)
+        if (chu[mShi] === "亥") { rels.push("月支と対冲"); means.push("仕事や社会的な立場において、現状を打破するような揺さぶりが生じやすい時。"); }
+        if (shigo[mShi] === "亥") { rels.push("月支と支合"); means.push("社会的な活動がスムーズに運び、周囲との協力体制が整います。"); }
+
+        // 三合会局・半会 (亥・未が含まれる場合)
+        sankai.forEach(group => {
+            if (group.includes("未") && group.includes(dShi)) { rels.push("日支と半会"); means.push("足元から可能性が大きく広がり、新しいステージへ進む活力が生まれます。"); }
+            if (group.includes("亥") && group.includes(mShi)) { rels.push("月支と半会"); means.push("仕事面で理想が広がり、ダイナミックな展開が期待できます。"); }
         });
 
-        if(relations.length === 0) {
-            relations.push("大きな波乱なし（静観）");
-            meanings.push("特別な星の干渉はありません。自分自身の内側を整える、穏やかな一日です。");
+        if (rels.length === 0) {
+            rels.push("大きな波乱なし");
+            means.push("宿命と時の運気が穏やかに調和しています。自分自身のペースを大切に。");
         }
 
-        document.getElementById('f-today').innerText = dailyKanshi;
-        document.getElementById('f-relation').innerText = [...new Set(relations)].join(' / ');
-        document.getElementById('f-meaning').innerText = [...new Set(meanings)].join(' ');
-        document.getElementById('f-theme').innerText = relations.join("").includes("対冲") ? "新旧の交代、意識の方向転換" : "現状維持と丁寧な積み重ね";
-        document.getElementById('f-good').innerText = "自分の感情をノートに書くこと。旬の食材を摂り、体内のリズムを整えること。";
-        document.getElementById('f-warn').innerText = "無理に結論を急がないこと。違和感があれば一度立ち止まって。";
-        document.getElementById('f-summary').innerText = "今日という日の風を読み、しなやかに自分を表現する一日。";
+        // リーディング出力
+        document.getElementById('f-today').innerText = pillars.day;
+        document.getElementById('f-relation').innerText = [...new Set(rels)].join(' / ');
+        document.getElementById('f-meaning').innerText = [...new Set(means)].join(' ');
+        document.getElementById('f-theme').innerText = rels.join().includes("対冲") ? "「破壊と創造」意識の転換" : "「誠実な積み重ね」と「内面の整理」";
+        document.getElementById('f-good').innerText = "丁寧な言葉選び、身の回りの整理整頓、直感に従った小さなアクション。";
+        document.getElementById('f-warn').innerText = "焦りは禁物。多忙な時ほど、一度深呼吸をしてから判断を下して。";
+        document.getElementById('f-summary').innerText = "「流れる雲のようにしなやかに、されど芯は強く。今日という日を楽しんで」";
     }
 
     // --- 既存UIロジック ---
@@ -240,10 +241,11 @@
                 celestial.innerText = "🌙"; celestial.style.top = "30px"; document.body.className = "night";
             }
 
-            analyzeIsoho(getDailyKanshi(now));
+            const pillars = getPillars(now);
+            analyze(pillars);
             await fetchNewsForCategory(currentTab);
         } catch (err) { console.log(err); }
-        updateBtn.innerText = "情報を更新";
+        updateBtn.innerText = "情報を更新する";
     }
 
     createTabs();
